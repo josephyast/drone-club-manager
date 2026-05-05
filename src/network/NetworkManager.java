@@ -1,7 +1,5 @@
 package network;
 
-import model.Order;
-
 import java.util.List;
 
 public class NetworkManager {
@@ -28,14 +26,6 @@ public class NetworkManager {
 
     public boolean handleFrequencyChangeRequest(String pilotId, String Frequency) {
         return true;
-    }
-
-    // ECommerce Projekt
-
-    public void processIncomingOrder(Order order) {
-    }
-
-    public void sendStockUğdate(int productId, int newStock) {
     }
 
 }
