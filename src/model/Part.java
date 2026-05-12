@@ -9,13 +9,18 @@ public class Part {
     private String brand;
     private String type;
     private int droneId;
+    private double operatingHours;
+    private boolean isWorking;
 
-    public Part(int id, String name, String brand, String type, int droneId) {
+
+    public Part(int id, String name, String brand, String type, int droneId , double operatingHours, boolean isWorking) {
         this.id = id;
         this.name = name;
         this.brand = brand;
         this.type = type;
         this.droneId = droneId;
+        this.operatingHours = operatingHours;
+        this.isWorking = isWorking;
     }
 
     public int getId() {
@@ -58,6 +63,19 @@ public class Part {
         this.droneId = droneId;
     }
 
+    public double getOperatingHours() {
+        return operatingHours;
+    }
+    public void setOperatingHours(double operatingHours) {
+        this.operatingHours = operatingHours;
+    }
+    public boolean isWorking() {
+        return isWorking;
+    }
+    public void setWorking(boolean working) {
+        isWorking = working;
+    }
+
     @Override
     public String toString() {
         return "Part{" + "id=" + id + ", name=" + name + ", brand=" + brand + ", type=" + type + ", droneId=" + droneId + '}';
@@ -68,7 +86,7 @@ public class Part {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Part part = (Part) o;
-        return id == part.id && droneId == part.droneId;
+        return id == part.id;
     }
 
     @Override

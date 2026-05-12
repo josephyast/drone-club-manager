@@ -7,12 +7,16 @@ public class Pilot {
     private String name;
     private String experienceLevel;
     private int totalFlightHours;
+    private int assignedFrequency;
+    private boolean isActive;
 
-    public Pilot(int id, String name, String experienceLevel, int totalFlightHours) {
+    public Pilot(int id, String name, String experienceLevel, int totalFlightHours, int assignedFrequency, boolean isActive) {
         this.id = id;
         this.name = name;
         this.experienceLevel = experienceLevel;
         this.totalFlightHours = totalFlightHours;
+        this.assignedFrequency = assignedFrequency;
+        this.isActive = isActive;
     }
 
     public int getId() {
@@ -46,6 +50,20 @@ public class Pilot {
     public void setTotalFlightHours(int totalFlightHours) {
         this.totalFlightHours = totalFlightHours;
     }
+
+    public int getAssignedFrequency() {
+        return assignedFrequency;
+    }
+    public void setAssignedFrequency(int assignedFrequency) {
+        this.assignedFrequency = assignedFrequency;
+    }
+    public boolean isActive() {
+        return isActive;
+    }
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
 
     @Override
     public String toString() {

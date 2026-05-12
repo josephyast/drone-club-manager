@@ -9,13 +9,21 @@ public class Drone {
     private String type;
     private double weight;
     private boolean isFunctional;
+    private String buildDate;
+    private String lastMaintenanceDate;
+    private long totalFlightTime;
+    private int currentFrequency;
 
-    public Drone(int id, String modelName, String type, double weight, boolean isFunctional) {
+    public Drone(int id, String modelName, String type, double weight, boolean isFunctional, String buildDate, String lastMaintenanceDate, long totalFlightTime, int currentFrequency) {
         this.id = id;
         this.modelName = modelName;
         this.type = type;
         this.weight = weight;
         this.isFunctional = isFunctional;
+        this.buildDate = buildDate;
+        this.lastMaintenanceDate = lastMaintenanceDate;
+        this.totalFlightTime = totalFlightTime;
+        this.currentFrequency = currentFrequency;
     }
 
     public int getId() {
@@ -58,9 +66,34 @@ public class Drone {
         isFunctional = functional;
     }
 
+    public String getBuildDate() {
+        return buildDate;
+    }
+    public void setBuildDate(String buildDate) {
+        this.buildDate = buildDate;
+    }
+    public String getLastMaintenanceDate() {
+        return lastMaintenanceDate;
+    }
+    public void setLastMaintenanceDate(String lastMaintenanceDate) {
+        this.lastMaintenanceDate = lastMaintenanceDate;
+    }
+    public long getTotalFlightTime() {
+        return totalFlightTime;
+    }
+    public void setTotalFlightTime(long totalFlightTime) {
+        this.totalFlightTime = totalFlightTime;
+    }
+    public int getCurrentFrequency() {
+        return currentFrequency;
+    }
+    public void setCurrentFrequency(int currentFrequency) {
+        this.currentFrequency = currentFrequency;
+    }
+
     @Override
     public String toString() {
-        return "Drone{" + "id=" + id + ", modelName='" + modelName + '\'' + ", type='" + type + '\'' + ", weight=" + weight + ", isFunctional=" + isFunctional + '}';
+        return "Drone{" + "id=" + id + ", modelName='" + modelName + '\'' + ", type='" + type + '\'' + ", weight=" + weight + ", isFunctional=" + isFunctional + '\'' + ", buildDate=" + buildDate + ", lastMaintenanceDate=" + lastMaintenanceDate + ", totalFlightTime=" + totalFlightTime +   ", currentFrequency=" + currentFrequency + '}';
     }
 
     @Override
@@ -68,7 +101,7 @@ public class Drone {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Drone drone = (Drone) o;
-        return id == drone.id && Double.compare(drone.weight, weight) == 0 && isFunctional == drone.isFunctional && Objects.equals(modelName, drone.modelName) && Objects.equals(type, drone.type);
+        return id == drone.id;
     }
 
     @Override

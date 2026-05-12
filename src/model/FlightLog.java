@@ -10,14 +10,18 @@ public class FlightLog {
     private String date;
     private int durationMinutes;
     private String comment;
+    private int usedFrequency;
+    private String location;
 
-    public FlightLog(int id, int pilotId, int droneId, String date, int durationMinutes, String comment) {
+    public FlightLog(int id, int pilotId, int droneId, String date, int durationMinutes, String comment, int usedFrequency, String location) {
         this.id = id;
         this.pilotId = pilotId;
         this.droneId = droneId;
         this.date = date;
         this.durationMinutes = durationMinutes;
         this.comment = comment;
+        this.usedFrequency = usedFrequency;
+        this.location = location;
     }
 
     public int getId() {
@@ -67,6 +71,21 @@ public class FlightLog {
     public void setDurationMinutes(int durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
+
+    public int getUsedFrequency() {
+        return usedFrequency;
+    }
+    public void setUsedFrequency(int usedFrequency) {
+        this.usedFrequency = usedFrequency;
+    }
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+
 
     @Override
     public String toString() {

@@ -12,8 +12,6 @@ public class DatabaseManager {
 
     }
 
-    // FPV Projekt
-
     public void savePilot(Pilot pilot) {
 
     }
@@ -47,6 +45,9 @@ public class DatabaseManager {
 
     public List<Part> getAllParts(){
         return null;
+    }
+
+    public void printMainenanceReport() {
     }
 
 }

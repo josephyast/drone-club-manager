@@ -19,7 +19,6 @@ public class NetworkManager {
         System.out.println("Server stopped.");
     }
 
-    //FPV Projekt
 
     public void broadcastFrequencyList(List<String> frequencies) {
     }
@@ -28,5 +27,7 @@ public class NetworkManager {
         return true;
     }
 
+    public void releaseFrequency(String pilotId) {
+    }
 }
 
