@@ -102,6 +102,6 @@ public class FlightLog {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, pilotId, droneId, date, durationMinutes, comment);
     }
 }

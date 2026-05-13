@@ -78,7 +78,7 @@ public class Part {
 
     @Override
     public String toString() {
-        return "Part{" + "id=" + id + ", name=" + name + ", brand=" + brand + ", type=" + type + ", droneId=" + droneId + '}';
+        return "Part{" + "id=" + id + ", name=" + name + ", brand=" + brand + ", type=" + type + ", droneId=" + droneId + "operatingHours=" +operatingHours+ "isWorking" + isWorking +'}';
     }
 
     @Override
@@ -91,6 +91,6 @@ public class Part {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, droneId);
+        return Objects.hash(id, name, brand, type, droneId, operatingHours, isWorking);
     }
 }

@@ -67,7 +67,7 @@ public class Pilot {
 
     @Override
     public String toString() {
-        return "Pilot{" + "id=" + id + ", name='" + name + '\'' + ", experienceLevel='" + experienceLevel + '\'' + ", totalFlightHours=" + totalFlightHours + '}';
+        return "Pilot{" + "id=" + id + ", name='" + name + '\'' + ", experienceLevel='" + experienceLevel + '\'' + ", totalFlightHours=" + totalFlightHours + "assignedFrequency=" +assignedFrequency+ "isActive=" +isActive+ '}';
     }
 
     @Override
@@ -81,6 +81,6 @@ public class Pilot {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, experienceLevel, totalFlightHours, assignedFrequency, isActive);
     }
 }

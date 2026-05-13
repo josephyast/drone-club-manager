@@ -99,13 +99,12 @@ public class Drone {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Drone drone = (Drone) o;
-        return id == drone.id;
+        if(!(o instanceof Drone drone)) return false;
+        return id == drone.id && Double.compare(drone.weight, weight) == 0 && isFunctional == drone.isFunctional && totalFlightTime == drone.totalFlightTime && currentFrequency == drone.currentFrequency && Objects.equals(modelName, drone.modelName) && Objects.equals(type, drone.type) && Objects.equals(buildDate, drone.buildDate) && Objects.equals(lastMaintenanceDate, drone.lastMaintenanceDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, modelName, type, weight, isFunctional, buildDate, lastMaintenanceDate, totalFlightTime, currentFrequency);
     }
 }
