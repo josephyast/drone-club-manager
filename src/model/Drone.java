@@ -1,20 +1,22 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Drone {
 
     private int id;
     private String modelName;
-    private String type;
+    private DroneType type;
     private double weight;
     private boolean isFunctional;
-    private String buildDate;
-    private String lastMaintenanceDate;
-    private long totalFlightTime;
-    private int currentFrequency;
+    private LocalDate buildDate;
+    private LocalDate lastMaintenanceDate;
+    private Duration totalFlightTime;
+    private double currentFrequency;
 
-    public Drone(int id, String modelName, String type, double weight, boolean isFunctional, String buildDate, String lastMaintenanceDate, long totalFlightTime, int currentFrequency) {
+    public Drone(int id, String modelName, DroneType type, double weight, boolean isFunctional, LocalDate buildDate, LocalDate lastMaintenanceDate, Duration totalFlightTime, double currentFrequency) {
         this.id = id;
         this.modelName = modelName;
         this.type = type;
@@ -42,11 +44,11 @@ public class Drone {
         this.modelName = modelName;
     }
 
-    public String getType() {
+    public DroneType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DroneType type) {
         this.type = type;
     }
 
@@ -66,28 +68,28 @@ public class Drone {
         isFunctional = functional;
     }
 
-    public String getBuildDate() {
+    public LocalDate getBuildDate() {
         return buildDate;
     }
-    public void setBuildDate(String buildDate) {
+        public void setBuildDate(LocalDate buildDate) {
         this.buildDate = buildDate;
     }
-    public String getLastMaintenanceDate() {
+    public LocalDate getLastMaintenanceDate() {
         return lastMaintenanceDate;
     }
-    public void setLastMaintenanceDate(String lastMaintenanceDate) {
+    public void setLastMaintenanceDate(LocalDate lastMaintenanceDate) {
         this.lastMaintenanceDate = lastMaintenanceDate;
     }
-    public long getTotalFlightTime() {
+    public Duration getTotalFlightTime() {
         return totalFlightTime;
     }
-    public void setTotalFlightTime(long totalFlightTime) {
+    public void setTotalFlightTime(Duration totalFlightTime) {
         this.totalFlightTime = totalFlightTime;
     }
-    public int getCurrentFrequency() {
+    public double getCurrentFrequency() {
         return currentFrequency;
     }
-    public void setCurrentFrequency(int currentFrequency) {
+    public void setCurrentFrequency(double currentFrequency) {
         this.currentFrequency = currentFrequency;
     }
 
@@ -99,12 +101,12 @@ public class Drone {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof Drone drone)) return false;
-        return id == drone.id && Double.compare(drone.weight, weight) == 0 && isFunctional == drone.isFunctional && totalFlightTime == drone.totalFlightTime && currentFrequency == drone.currentFrequency && Objects.equals(modelName, drone.modelName) && Objects.equals(type, drone.type) && Objects.equals(buildDate, drone.buildDate) && Objects.equals(lastMaintenanceDate, drone.lastMaintenanceDate);
+        if (!(o instanceof Drone drone)) return false;
+        return id == drone.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, modelName, type, weight, isFunctional, buildDate, lastMaintenanceDate, totalFlightTime, currentFrequency);
+        return Objects.hash(id);
     }
 }

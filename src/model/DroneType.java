@@ -1,0 +1,9 @@
+package model;
+
+public enum DroneType {
+    TOOTHPICKS,
+    MICROINDOORTINYWHOOP,
+    TWOINCHTINYWHOOP,
+    FIVEINCHRACING,
+    SEVENINCHLONGRAGE,
+}
