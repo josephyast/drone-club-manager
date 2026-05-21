@@ -7,18 +7,18 @@ public class Part {
     private int id;
     private String name;
     private String brand;
-    private String type;
-    private int droneId;
+    private PartType type;
+    private Drone drone;
     private double operatingHours;
     private boolean isWorking;
 
 
-    public Part(int id, String name, String brand, String type, int droneId , double operatingHours, boolean isWorking) {
+    public Part(int id, String name, String brand, PartType type, Drone drone , double operatingHours, boolean isWorking) {
         this.id = id;
         this.name = name;
         this.brand = brand;
         this.type = type;
-        this.droneId = droneId;
+        this.drone = drone;
         this.operatingHours = operatingHours;
         this.isWorking = isWorking;
     }
@@ -47,20 +47,20 @@ public class Part {
         this.brand = brand;
     }
 
-    public String getType() {
+    public PartType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PartType type) {
         this.type = type;
     }
 
-    public int getDroneId() {
-        return droneId;
+    public Drone getDrone() {
+        return drone;
     }
 
-    public void setDroneId(int droneId) {
-        this.droneId = droneId;
+    public void setDroneId(Drone drone) {
+        this.drone = drone;
     }
 
     public double getOperatingHours() {
@@ -78,7 +78,7 @@ public class Part {
 
     @Override
     public String toString() {
-        return "Part{" + "id=" + id + ", name=" + name + ", brand=" + brand + ", type=" + type + ", droneId=" + droneId + "operatingHours=" +operatingHours+ "isWorking" + isWorking +'}';
+        return "Part{" + "id=" + id + ", name=" + name + ", brand=" + brand + ", type=" + type + ", drone=" + drone + "operatingHours=" +operatingHours+ "isWorking" + isWorking +'}';
     }
 
     @Override
@@ -91,6 +91,6 @@ public class Part {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, type, droneId, operatingHours, isWorking);
+        return Objects.hash(id, name, brand, type, drone, operatingHours, isWorking);
     }
 }
