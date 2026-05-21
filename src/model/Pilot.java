@@ -1,16 +1,17 @@
 package model;
 
+import java.time.Duration;
 import java.util.Objects;
 public class Pilot {
 
     private int id;
     private String name;
-    private String experienceLevel;
-    private int totalFlightHours;
-    private int assignedFrequency;
+    private ExperienceLevel experienceLevel;
+    private Duration totalFlightHours;
+    private double assignedFrequency;
     private boolean isActive;
 
-    public Pilot(int id, String name, String experienceLevel, int totalFlightHours, int assignedFrequency, boolean isActive) {
+    public Pilot(int id, String name, ExperienceLevel experienceLevel, Duration totalFlightHours, double assignedFrequency, boolean isActive) {
         this.id = id;
         this.name = name;
         this.experienceLevel = experienceLevel;
@@ -35,26 +36,26 @@ public class Pilot {
         this.name = name;
     }
 
-    public String getExperienceLevel() {
+    public ExperienceLevel getExperienceLevel() {
         return experienceLevel;
     }
 
-    public void setExperienceLevel(String experienceLevel) {
+    public void setExperienceLevel(ExperienceLevel experienceLevel) {
         this.experienceLevel = experienceLevel;
     }
 
-    public int getTotalFlightHours() {
+    public Duration getTotalFlightHours() {
         return totalFlightHours;
     }
 
-    public void setTotalFlightHours(int totalFlightHours) {
+    public void setTotalFlightHours(Duration totalFlightHours) {
         this.totalFlightHours = totalFlightHours;
     }
 
-    public int getAssignedFrequency() {
+    public double getAssignedFrequency() {
         return assignedFrequency;
     }
-    public void setAssignedFrequency(int assignedFrequency) {
+    public void setAssignedFrequency(double assignedFrequency) {
         this.assignedFrequency = assignedFrequency;
     }
     public boolean isActive() {
@@ -73,14 +74,12 @@ public class Pilot {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pilot pilot = (Pilot) o;
+        if (!(o instanceof Pilot pilot)) return false;
         return id == pilot.id;
     }
 
-
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, experienceLevel, totalFlightHours, assignedFrequency, isActive);
+        return Objects.hash(id);
     }
 }

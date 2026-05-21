@@ -66,11 +66,11 @@ public class FlightLog {
         this.comment = comment;
     }
 
-    public Duration getDurationMinutes() {
+    public Duration getFlightDuration() {
         return flightDuration;
     }
 
-    public void setDurationMinutes(Duration flightDuration) {
+    public void setFlightDuration(Duration flightDuration) {
         this.flightDuration = flightDuration;
     }
 

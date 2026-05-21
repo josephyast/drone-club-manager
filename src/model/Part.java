@@ -1,5 +1,6 @@
 package model;
 
+import java.time.Duration;
 import java.util.Objects;
 
 public class Part {
@@ -9,11 +10,11 @@ public class Part {
     private String brand;
     private PartType type;
     private Drone drone;
-    private double operatingHours;
+    private Duration operatingHours;
     private boolean isWorking;
 
 
-    public Part(int id, String name, String brand, PartType type, Drone drone , double operatingHours, boolean isWorking) {
+    public Part(int id, String name, String brand, PartType type, Drone drone , Duration operatingHours, boolean isWorking) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -59,14 +60,14 @@ public class Part {
         return drone;
     }
 
-    public void setDroneId(Drone drone) {
+    public void setDrone(Drone drone) {
         this.drone = drone;
     }
 
-    public double getOperatingHours() {
+    public Duration getOperatingHours() {
         return operatingHours;
     }
-    public void setOperatingHours(double operatingHours) {
+    public void setOperatingHours(Duration operatingHours) {
         this.operatingHours = operatingHours;
     }
     public boolean isWorking() {
@@ -84,13 +85,12 @@ public class Part {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Part part = (Part) o;
+        if (!(o instanceof Part part)) return false;
         return id == part.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, type, drone, operatingHours, isWorking);
+        return Objects.hash(id);
     }
 }
