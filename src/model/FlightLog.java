@@ -1,24 +1,26 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class FlightLog {
 
     private int id;
-    private int pilotId;
-    private int droneId;
-    private String date;
-    private int durationMinutes;
+    private Pilot pilot;
+    private Drone drone;
+    private LocalDate date;
+    private Duration flightDuration;
     private String comment;
-    private int usedFrequency;
+    private double usedFrequency;
     private String location;
 
-    public FlightLog(int id, int pilotId, int droneId, String date, int durationMinutes, String comment, int usedFrequency, String location) {
+    public FlightLog(int id, Pilot pilot, Drone drone, LocalDate date, Duration flightDuration, String comment, double usedFrequency, String location) {
         this.id = id;
-        this.pilotId = pilotId;
-        this.droneId = droneId;
+        this.pilot = pilot;
+        this.drone = drone;
         this.date = date;
-        this.durationMinutes = durationMinutes;
+        this.flightDuration = flightDuration;
         this.comment = comment;
         this.usedFrequency = usedFrequency;
         this.location = location;
@@ -32,27 +34,27 @@ public class FlightLog {
         this.id = id;
     }
 
-    public int getPilotId() {
-        return pilotId;
+    public Pilot getPilot() {
+        return pilot;
     }
 
-    public void setPilotId(int pilotId) {
-        this.pilotId = pilotId;
+    public void setPilot(Pilot pilot) {
+        this.pilot = pilot;
     }
 
-    public int getDroneId() {
-        return droneId;
+    public Drone getDrone() {
+        return drone;
     }
 
-    public void setDroneId(int droneId) {
-        this.droneId = droneId;
+    public void setDrone(Drone drone) {
+        this.drone = drone;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -64,18 +66,18 @@ public class FlightLog {
         this.comment = comment;
     }
 
-    public int getDurationMinutes() {
-        return durationMinutes;
+    public Duration getDurationMinutes() {
+        return flightDuration;
     }
 
-    public void setDurationMinutes(int durationMinutes) {
-        this.durationMinutes = durationMinutes;
+    public void setDurationMinutes(Duration flightDuration) {
+        this.flightDuration = flightDuration;
     }
 
-    public int getUsedFrequency() {
+    public double getUsedFrequency() {
         return usedFrequency;
     }
-    public void setUsedFrequency(int usedFrequency) {
+    public void setUsedFrequency(double usedFrequency) {
         this.usedFrequency = usedFrequency;
     }
     public String getLocation() {
@@ -89,19 +91,18 @@ public class FlightLog {
 
     @Override
     public String toString() {
-        return "FlightLog{" + "id=" + id + ", pilotId=" + pilotId + ", droneId=" + droneId + ", date=" + date + ", durationMinutes=" + durationMinutes + ", comment=" + comment + '}';
+        return "FlightLog{" + "id=" + id + ", pilot=" + pilot + ", drone=" + drone + ", date=" + date + ", flightDuration=" + flightDuration + ", comment=" + comment +", usedFrequency=" + usedFrequency + ", location='" + location + '\'' + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FlightLog flightLog = (FlightLog) o;
+        if (!(o instanceof FlightLog flightLog)) return false;
         return id == flightLog.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pilotId, droneId, date, durationMinutes, comment);
+        return Objects.hash(id);
     }
 }
