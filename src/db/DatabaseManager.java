@@ -1,13 +1,18 @@
 package db;
 
+
 import model.Pilot;
 import model.Drone;
 import model.FlightLog;
 import model.Part;
 
 import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class DatabaseManager {
+
+    Connection conn = DriverManager.getConnection( "jdbc:sqlite:data.db" ) ;
     public void connect() {
 
     }
