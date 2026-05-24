@@ -1,58 +1,25 @@
 package db;
 
-
-import model.Pilot;
-import model.Drone;
-import model.FlightLog;
-import model.Part;
-
-import java.util.List;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DatabaseManager {
 
-    Connection conn = DriverManager.getConnection( "jdbc:sqlite:data.db" ) ;
-    public void connect() {
+    private final DatabaseConnection dbConnection;
 
+    public DatabaseManager(DatabaseConnection dbConnection) {
+        this.dbConnection = dbConnection;
     }
 
-    public void savePilot(Pilot pilot) {
-
+    public void closeConnection() {
+        try {
+            Connection conn = dbConnection.getConnection();
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Database connection successfully closed.");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error closing database connection: " + e.getMessage());
+        }
     }
-
-    public Pilot getPilotById(int id) {
-        return null;
-    }
-
-    public void saveDrone(Drone drone) {
-
-    }
-
-    public Drone getDroneById(int id) {
-        return null;
-    }
-    public List<Drone> getAllDrones(){
-        return null;
-    }
-
-    public void addFlightLog(FlightLog flightLog) {
-
-    }
-
-    public void savePart(Part part) {
-
-    }
-
-    public Part getPartById(int id) {
-        return null;
-    }
-
-    public List<Part> getAllParts(){
-        return null;
-    }
-
-    public void printMainenanceReport() {
-    }
-
 }

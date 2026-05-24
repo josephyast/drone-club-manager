@@ -7,13 +7,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 
 public class PartDAO {
 
     private final DatabaseConnection dbConnection;
+    private final DroneDAO droneDAO;
 
     public PartDAO(DatabaseConnection dbConnection) {
         this.dbConnection = dbConnection;
+        this.droneDAO = new DroneDAO(dbConnection);
     }
 
     public void insertPart(Part part) {
@@ -139,5 +142,28 @@ public class PartDAO {
             System.err.println("Error retrieving parts: " + e.getMessage());
             return parts;
         }
+    }
+
+    public Part getFullyLoadedPart(int id) {
+        Part part = getPartById(id);
+
+        if (part != null) {
+            int realDroneId = part.getDrone().getId();
+            Drone realDrone = this.droneDAO.getDroneById(realDroneId);
+            part.setDrone(realDrone);
+        }
+
+        return part;
+    }
+
+    public List<Part> getAllFullyLoadedParts() {
+        List<Part> rawParts = getAllParts();
+
+        for (Part part : rawParts) {
+            Drone realDrone = this.droneDAO.getDroneById(part.getDrone().getId());
+            part.setDrone(realDrone);
+        }
+
+        return rawParts;
     }
 }

@@ -1,20 +1,23 @@
 package db;
 
-import model.DroneType;
-import model.ExperienceLevel;
-import model.FlightLog;
+import model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 
 public class FlightLogDAO {
     private final DatabaseConnection dbConnection;
+    private final PilotDAO pilotDAO;
+    private final DroneDAO droneDAO;
 
     public FlightLogDAO(DatabaseConnection dbConnection) {
         this.dbConnection = dbConnection;
+        this.pilotDAO = new PilotDAO(dbConnection);
+        this.droneDAO = new DroneDAO(dbConnection);
     }
 
     public void insertFlightLog(FlightLog flightLog) {
@@ -149,5 +152,38 @@ public class FlightLogDAO {
             System.err.println("Error retrieving flightLogs: " + e.getMessage());
             return flightLogs;
         }
+    }
+
+    public FlightLog getFullyLoadedFlightLog(int id) {
+        FlightLog flightLog = getFlightLogById(id);
+
+        if (flightLog != null) {
+
+            int realPilotId = flightLog.getPilot().getId();
+            int realDroneId = flightLog.getDrone().getId();
+
+            Pilot realPilot = this.pilotDAO.getPilotById(realPilotId);
+            Drone realDrone = this.droneDAO.getDroneById(realDroneId);
+
+            flightLog.setPilot(realPilot);
+            flightLog.setDrone(realDrone);
+        }
+        return flightLog;
+    }
+
+    public List<FlightLog> getAllFullyLoadedFlightLogs() {
+        List<FlightLog> flightLogs = getAllFlightLogs();
+
+        for (FlightLog flightLog : flightLogs) {
+            int realPilotId = flightLog.getPilot().getId();
+            int realDroneId = flightLog.getDrone().getId();
+
+            Pilot realPilot = this.pilotDAO.getPilotById(realPilotId);
+            Drone realDrone = this.droneDAO.getDroneById(realDroneId);
+
+            flightLog.setPilot(realPilot);
+            flightLog.setDrone(realDrone);
+        }
+        return flightLogs;
     }
 }
