@@ -25,11 +25,11 @@ public class Main {
 
         try{
             System.out.println("Insert 5 Pilots");
-            Pilot p1 = new Pilot(0,"Yusuf Yasti", ExperienceLevel.EXPERT, Duration.ofHours(5), 120.0, true);
-            Pilot p2 = new Pilot(0,"Ahmet Kerem Yasti", ExperienceLevel.ADVANCED, Duration.ofHours(3), 139.5, true);
-            Pilot p3 = new Pilot(0,"Fevziye Yasti", ExperienceLevel.INTERMEDIATE, Duration.ofHours(8), 123.4, true);
-            Pilot p4 = new Pilot(0,"Hakan Yasti", ExperienceLevel.BEGINNER, Duration.ofHours(2), 98.2, false);
-            Pilot p5 = new Pilot(0,"Fatma Nur Yasti", ExperienceLevel.INTERMEDIATE, Duration.ofHours(7), 110.0, true);
+            Pilot p1 = new Pilot(0,"Yusuf Yasti", "yusufyasti", "Yusuf123!",ExperienceLevel.EXPERT, Duration.ofHours(5), 120.0, true);
+            Pilot p2 = new Pilot(0,"Ahmet Kerem Yasti", "ahmetkeremyasti", "Ahmet123!", ExperienceLevel.ADVANCED, Duration.ofHours(3), 139.5, true);
+            Pilot p3 = new Pilot(0,"Fevziye Yasti", "fevziyeyasti", "Fevziye123!", ExperienceLevel.INTERMEDIATE, Duration.ofHours(8), 123.4, true);
+            Pilot p4 = new Pilot(0,"Hakan Yasti", "hakanyasti", "Hakan123!", ExperienceLevel.BEGINNER, Duration.ofHours(2), 98.2, false);
+            Pilot p5 = new Pilot(0,"Fatma Nur Yasti", "fatmanuryasti", "Fatma123!", ExperienceLevel.INTERMEDIATE, Duration.ofHours(7), 110.0, true);
 
             pilotDAO.insertPilot(p1);
             pilotDAO.insertPilot(p2);
@@ -52,14 +52,11 @@ public class Main {
 
             System.out.println("Insert 5 Flight Logs");
 
-            Pilot pilot = new Pilot(1, "Unknown", ExperienceLevel.BEGINNER, Duration.ZERO, 0.0, false);
-            Drone drone = new Drone(1, "Unknown", DroneType.FIVEINCHRACING, 0.0, false, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
-
-            FlightLog fl1 = new FlightLog(0, pilot, drone, LocalDate.now(), Duration.ofMinutes(22), "Smooth park flight", 5.8, "Essen Campus");
-            FlightLog fl2 = new FlightLog(0, pilot, drone, LocalDate.now().minusDays(1), Duration.ofMinutes(15), "Testing new props", 5.8, "Backyard");
-            FlightLog fl3 = new FlightLog(0, pilot, drone, LocalDate.now().minusDays(3), Duration.ofMinutes(30), "Cinematic sunset video", 2.4, "Rhein River");
-            FlightLog fl4 = new FlightLog(0, pilot, drone, LocalDate.now().minusWeeks(1), Duration.ofMinutes(8), "Accidental minor crash", 5.8, "Duisburg Campus");
-            FlightLog fl5 = new FlightLog(0, pilot, drone, LocalDate.now().minusWeeks(2), Duration.ofMinutes(45), "Long range endurance test", 2.4, "Open Field");
+            FlightLog fl1 = new FlightLog(0, p1, d1, LocalDate.now(), Duration.ofMinutes(22), "Smooth park flight", 5.8, "Essen Campus");
+            FlightLog fl2 = new FlightLog(0, p2, d2, LocalDate.now().minusDays(1), Duration.ofMinutes(15), "Testing new props", 5.8, "Backyard");
+            FlightLog fl3 = new FlightLog(0, p3, d3, LocalDate.now().minusDays(3), Duration.ofMinutes(30), "Cinematic sunset video", 2.4, "Rhein River");
+            FlightLog fl4 = new FlightLog(0, p4, d4, LocalDate.now().minusWeeks(1), Duration.ofMinutes(8), "Accidental minor crash", 5.8, "Duisburg Campus");
+            FlightLog fl5 = new FlightLog(0, p5, d5, LocalDate.now().minusWeeks(2), Duration.ofMinutes(45), "Long range endurance test", 2.4, "Open Field");
 
             flightLogDAO.insertFlightLog(fl1);
             flightLogDAO.insertFlightLog(fl2);
@@ -69,11 +66,11 @@ public class Main {
 
             System.out.println("Insert 5 Parts");
 
-            Part part1 = new Part(0, "Brushless Motor 2306", "Emax", PartType.MOTOR, drone, Duration.ofHours(12), true);
-            Part part2 = new Part(0, "F4 Flight Controller", "BetaFPV", PartType.FC, drone, Duration.ofHours(4), true);
-            Part part3 = new Part(0, "Ethix S5 Propellers", "HQProp", PartType.PROPELLERS, drone, Duration.ofHours(2), true);
-            Part part4 = new Part(0, "Caddx Vista VTX", "Caddx", PartType.FRAME, drone, Duration.ofHours(25), false);
-            Part part5 = new Part(0, "Lipo 4S 1300mAh", "Tattu", PartType.BATTERY, drone, Duration.ofHours(18), true);
+            Part part1 = new Part(0, "Brushless Motor 2306", "Emax", PartType.MOTOR, d1, Duration.ofHours(12), true);
+            Part part2 = new Part(0, "F4 Flight Controller", "BetaFPV", PartType.FC, d2, Duration.ofHours(4), true);
+            Part part3 = new Part(0, "Ethix S5 Propellers", "HQProp", PartType.PROPELLERS, d3, Duration.ofHours(2), true);
+            Part part4 = new Part(0, "Caddx Vista VTX", "Caddx", PartType.FRAME, d4, Duration.ofHours(25), false);
+            Part part5 = new Part(0, "Lipo 4S 1300mAh", "Tattu", PartType.BATTERY, d5, Duration.ofHours(18), true);
 
 
             partDAO.insertPart(part1);
@@ -100,6 +97,24 @@ public class Main {
                 } else {
                     System.out.println("Real Drone Model: Drone could not be loaded from DB");
                 }
+            }
+
+            System.out.println("Trying to login with correct credentials.");
+            Pilot loggedInPilot = pilotDAO.loginPilot("yusufyasti", "Yusuf123!");
+            if (loggedInPilot != null) {
+                System.out.println(" Auth Success! Welcome, " + loggedInPilot.getName());
+            }
+
+            System.out.println("Trying to login with WRONG password.");
+            pilotDAO.loginPilot("yusufyasti", "wrong_password_123");
+
+            System.out.println("Registering a new pilot with unique username check.");
+            String candidateUsername = "dr_fpv_pilot";
+            if (pilotDAO.isUsernameTaken(candidateUsername)) {
+                System.out.println("Registration Aborted: Username '" + candidateUsername + "' already exists.");
+            } else {
+                Pilot newPilotCandidate = new Pilot(0, "Hakkı Cetin", candidateUsername, "SecureJohn99!", ExperienceLevel.ADVANCED, Duration.ZERO, 5.8, true);
+                pilotDAO.registerPilot(newPilotCandidate, "Cetin99!");
             }
         } catch (Exception e) {
             System.err.println("An error occurred during testing: " + e.getMessage());

@@ -29,7 +29,7 @@ public class DatabaseManager {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT NOT NULL, " +
                 "username TEXT UNIQUE NOT NULL, " +
-                "password TEXT NOT NULL, " +
+                "password_hash TEXT NOT NULL, " +
                 "experience_level TEXT, " +
                 "total_flight_hours TEXT, " +
                 "assigned_frequency REAL, " +

@@ -14,18 +14,27 @@ public class PilotDAO {
     }
 
     public void insertPilot(Pilot pilot) {
-        String sql = "INSERT INTO pilots (name, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?);";
+        String sql = "INSERT INTO pilots (name,username,password_hash, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?,?,?);";
 
         try(Connection conn = dbConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, pilot.getName());
-            pstmt.setString(2, pilot.getExperienceLevel().name());
-            pstmt.setString(3, pilot.getTotalFlightHours().toString());
-            pstmt.setDouble(4, pilot.getAssignedFrequency());
-            pstmt.setInt(5, pilot.isActive() ? 1 : 0);
+            pstmt.setString(2, pilot.getUsername());
+            pstmt.setString(3, pilot.getPasswordHash());
+            pstmt.setString(4, pilot.getExperienceLevel().name());
+            pstmt.setString(5, pilot.getTotalFlightHours().toString());
+            pstmt.setDouble(6, pilot.getAssignedFrequency());
+            pstmt.setInt(7, pilot.isActive() ? 1 : 0);
 
             pstmt.executeUpdate();
+
+            try (var generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    pilot.setId(generatedKeys.getInt(1));
+                }
+            }
+
             System.out.println("Pilot successfully inserted " + pilot.getName());
         } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error inserting pilot: " + e.getMessage());
@@ -33,17 +42,19 @@ public class PilotDAO {
     }
 
     public void updatePilot(Pilot pilot) {
-        String sql = "UPDATE pilots SET name = ?, experience_level = ?, total_flight_hours = ?, assigned_frequency = ?, is_active = ? WHERE id = ?;";
+        String sql = "UPDATE pilots SET name = ?,username = ?, password_hash = ?, experience_level = ?, total_flight_hours = ?, assigned_frequency = ?, is_active = ? WHERE id = ?;";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, pilot.getName());
-            pstmt.setString(2, pilot.getExperienceLevel().name());
-            pstmt.setString(3, pilot.getTotalFlightHours().toString());
-            pstmt.setDouble(4, pilot.getAssignedFrequency());
-            pstmt.setInt(5, pilot.isActive() ? 1 : 0);
-            pstmt.setInt(6, pilot.getId());
+            pstmt.setString(2, pilot.getUsername());
+            pstmt.setString(3, pilot.getPasswordHash());
+            pstmt.setString(4, pilot.getExperienceLevel().name());
+            pstmt.setString(5, pilot.getTotalFlightHours().toString());
+            pstmt.setDouble(6, pilot.getAssignedFrequency());
+            pstmt.setInt(7, pilot.isActive() ? 1 : 0);
+            pstmt.setInt(8, pilot.getId());
 
             pstmt.executeUpdate();
             System.out.println("Pilot successfully updated: " + pilot.getName());
@@ -81,10 +92,13 @@ public class PilotDAO {
                 Pilot pilot = new Pilot(
                         rs.getInt("id"),
                         rs.getString("name"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
                         model.ExperienceLevel.valueOf(rs.getString("experience_level")),
                         java.time.Duration.parse(rs.getString("total_flight_hours")),
                         rs.getDouble("assigned_frequency"),
-                        rs.getInt("is_active") == 1
+                        rs.getInt("is_active") == 1,
+                        true
                 );
                 return pilot;
             } else {
@@ -111,10 +125,13 @@ public class PilotDAO {
                 Pilot pilot = new Pilot(
                         rs.getInt("id"),
                         rs.getString("name"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
                         model.ExperienceLevel.valueOf(rs.getString("experience_level")),
                         java.time.Duration.parse(rs.getString("total_flight_hours")),
                         rs.getDouble("assigned_frequency"),
-                        rs.getInt("is_active") == 1
+                        rs.getInt("is_active") == 1,
+                        true
                 );
                 pilots.add(pilot);
             }
@@ -124,5 +141,79 @@ public class PilotDAO {
             System.err.println("Error retrieving pilots: " + e.getMessage());
             return pilots;
         }
+    }
+
+    public void registerPilot(Pilot pilot, String password) {
+
+        String hashedPassword = util.PasswordHasher.hashPassword(password);
+        String sql = "INSERT INTO pilots (name, username, password_hash, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?,?,?);";
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, pilot.getName());
+            pstmt.setString(2, pilot.getUsername());
+            pstmt.setString(3, hashedPassword);
+            pstmt.setString(4, pilot.getExperienceLevel().name());
+            pstmt.setString(5, pilot.getTotalFlightHours().toString());
+            pstmt.setDouble(6, pilot.getAssignedFrequency());
+            pstmt.setInt(7, pilot.isActive() ? 1 : 0);
+
+            pstmt.executeUpdate();
+            System.out.println("Pilot successfully registered: " + pilot.getName());
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error registering pilot: " + e.getMessage());
+        }
+    }
+
+    public boolean isUsernameTaken(String username){
+        String sql = "SELECT COUNT(*) FROM pilots WHERE username = ?;";
+        try(Connection conn = dbConnection.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            var rs = pstmt.executeQuery();
+            if(rs.next()){
+                return rs.getInt(1) > 0;
+            }
+            return false;
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error checking username: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public Pilot loginPilot(String username, String password) {
+        String sql = "SELECT * FROM pilots WHERE username = ?;";
+
+        try (Connection conn = dbConnection.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1,username);
+            var rs = pstmt.executeQuery();
+
+            if (rs.next()){
+                String storedHash = rs.getString("password_hash");
+
+                if(util.PasswordHasher.checkPassword(password, storedHash)){
+                    System.out.println("Login successful: " + username);
+                    return new Pilot(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("username"),
+                            rs.getString("password_hash"),
+                            model.ExperienceLevel.valueOf(rs.getString("experience_level")),
+                            java.time.Duration.parse(rs.getString("total_flight_hours")),
+                            rs.getDouble("assigned_frequency"),
+                            rs.getInt("is_active") == 1,
+                            true
+                    );
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error during login: " + e.getMessage());
+        }
+
+        System.out.println("Login failed for username or password.");
+        return null;
     }
 }

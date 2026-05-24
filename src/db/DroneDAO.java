@@ -6,6 +6,7 @@ import model.Drone;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DroneDAO {
     
@@ -19,7 +20,7 @@ public class DroneDAO {
         String sql = "INSERT INTO drones (model_name, type, weight, is_functional, build_date, last_maintenance_date, total_flight_time, current_frequency) VALUES (?,?,?,?,?,?,?,?);";
 
         try(Connection conn = dbConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, drone.getModelName());
             pstmt.setString(2, drone.getType().name());
@@ -31,6 +32,12 @@ public class DroneDAO {
             pstmt.setDouble(8, drone.getCurrentFrequency());
 
             pstmt.executeUpdate();
+
+            try (var generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    drone.setId(generatedKeys.getInt(1));
+                }
+            }
             System.out.println("Drone successfully inserted: " + drone.getModelName());
         } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error inserting drone: " + e.getMessage());

@@ -6,14 +6,29 @@ public class Pilot {
 
     private int id;
     private String name;
+    private String username;
+    private String passwordHash;
     private ExperienceLevel experienceLevel;
     private Duration totalFlightHours;
     private double assignedFrequency;
     private boolean isActive;
 
-    public Pilot(int id, String name, ExperienceLevel experienceLevel, Duration totalFlightHours, double assignedFrequency, boolean isActive) {
+    public Pilot(int id, String name, String username,String plainPassword, ExperienceLevel experienceLevel, Duration totalFlightHours, double assignedFrequency, boolean isActive) {
         this.id = id;
         this.name = name;
+        this.username = username;
+        this.passwordHash = util.PasswordHasher.hashPassword(plainPassword);
+        this.experienceLevel = experienceLevel;
+        this.totalFlightHours = totalFlightHours;
+        this.assignedFrequency = assignedFrequency;
+        this.isActive = isActive;
+    }
+
+    public Pilot(int id, String name, String username, String passwordHash, ExperienceLevel experienceLevel, Duration totalFlightHours, double assignedFrequency, boolean isActive, boolean isAlreadyHashed) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.passwordHash = passwordHash;
         this.experienceLevel = experienceLevel;
         this.totalFlightHours = totalFlightHours;
         this.assignedFrequency = assignedFrequency;
@@ -34,6 +49,22 @@ public class Pilot {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public ExperienceLevel getExperienceLevel() {
@@ -68,7 +99,16 @@ public class Pilot {
 
     @Override
     public String toString() {
-        return "Pilot{" + "id=" + id + ", name='" + name + '\'' + ", experienceLevel='" + experienceLevel + '\'' + ", totalFlightHours=" + totalFlightHours + "assignedFrequency=" +assignedFrequency+ "isActive=" +isActive+ '}';
+        return "Pilot{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", passwordHash='******'" +
+                ", experienceLevel=" + experienceLevel +
+                ", totalFlightHours=" + totalFlightHours +
+                ", assignedFrequency=" + assignedFrequency +
+                ", isActive=" + isActive +
+                '}';
     }
 
     @Override
