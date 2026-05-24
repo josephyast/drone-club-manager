@@ -165,8 +165,12 @@ public class FlightLogDAO {
             Pilot realPilot = this.pilotDAO.getPilotById(realPilotId);
             Drone realDrone = this.droneDAO.getDroneById(realDroneId);
 
-            flightLog.setPilot(realPilot);
-            flightLog.setDrone(realDrone);
+            if (realPilot != null) {
+                flightLog.setPilot(realPilot);
+            }
+            if (realDrone != null) {
+                flightLog.setDrone(realDrone);
+            }
         }
         return flightLog;
     }
@@ -181,8 +185,12 @@ public class FlightLogDAO {
             Pilot realPilot = this.pilotDAO.getPilotById(realPilotId);
             Drone realDrone = this.droneDAO.getDroneById(realDroneId);
 
-            flightLog.setPilot(realPilot);
-            flightLog.setDrone(realDrone);
+            if (realPilot != null) {
+                flightLog.setPilot(realPilot);
+            }
+            if (realDrone != null) {
+                flightLog.setDrone(realDrone);
+            }
         }
         return flightLogs;
     }
