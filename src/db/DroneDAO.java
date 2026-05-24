@@ -16,7 +16,7 @@ public class DroneDAO {
     }
     
     public void insertDrone(Drone drone) {
-        String sql = "INSERT INTO drones (modelName, type, weight, isFunctional, buildDate, lastMaintenanceDate, totalFlightTime, currentFrequency) VALUES (?,?,?,?,?,?,?,?);";
+        String sql = "INSERT INTO drones (model_name, type, weight, is_functional, build_date, last_maintenance_date, total_flight_time, current_frequency) VALUES (?,?,?,?,?,?,?,?);";
 
         try(Connection conn = dbConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -38,7 +38,7 @@ public class DroneDAO {
     }
 
     public void updateDrone(Drone drone) {
-        String sql = "UPDATE drones SET modelName = ?, type = ?, weight = ?, isFunctional = ?, buildDate = ?, lastMaintenanceDate = ?, totalFlightTime = ?, currentFrequency = ? WHERE id = ?;";
+        String sql = "UPDATE drones SET model_name = ?, type = ?, weight = ?, is_functional = ?, build_date = ?, last_maintenance_date = ?, total_flight_time = ?, current_frequency = ? WHERE id = ?;";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -87,14 +87,14 @@ public class DroneDAO {
                 Drone drone = new Drone(
 
                         rs.getInt("id"),
-                        rs.getString("modelName"),
+                        rs.getString("model_name"),
                         model.DroneType.valueOf(rs.getString("type")),
                         rs.getDouble("weight"),
-                        rs.getInt("isFunctional") == 1,
-                        java.time.LocalDate.parse(rs.getString("buildDate")),
-                        java.time.LocalDate.parse(rs.getString("lastMaintenanceDate")),
-                        java.time.Duration.parse(rs.getString("totalFlightTime")),
-                        rs.getDouble("currentFrequency")
+                        rs.getInt("is_functional") == 1,
+                        java.time.LocalDate.parse(rs.getString("build_date")),
+                        java.time.LocalDate.parse(rs.getString("last_maintenance_date")),
+                        java.time.Duration.parse(rs.getString("total_flight_time")),
+                        rs.getDouble("current_frequency")
                 );
                 return drone;
             } else {
@@ -120,14 +120,14 @@ public class DroneDAO {
             while (rs.next()) {
                 Drone drone = new Drone(
                         rs.getInt("id"),
-                        rs.getString("modelName"),
+                        rs.getString("model_name"),
                         model.DroneType.valueOf(rs.getString("type")),
                         rs.getDouble("weight"),
-                        rs.getInt("isFunctional") == 1,
-                        java.time.LocalDate.parse(rs.getString("buildDate")),
-                        java.time.LocalDate.parse(rs.getString("lastmaintenanceDate")),
-                        java.time.Duration.parse(rs.getString("totalFlightTime")),
-                        rs.getDouble("currentFrequency")
+                        rs.getInt("is_functional") == 1,
+                        java.time.LocalDate.parse(rs.getString("build_date")),
+                        java.time.LocalDate.parse(rs.getString("last_maintenanceD_date")),
+                        java.time.Duration.parse(rs.getString("total_flight_time")),
+                        rs.getDouble("current_frequency")
                 );
                 drones.add(drone);
             }
