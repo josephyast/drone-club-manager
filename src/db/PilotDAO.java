@@ -14,7 +14,7 @@ public class PilotDAO {
     }
 
     public void insertPilot(Pilot pilot) {
-        String sql = "INSERT INTO pilots (name, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?);";
+        String sql = "INSERT INTO pilots (name, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?,?);";
 
         try(Connection conn = dbConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
