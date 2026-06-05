@@ -39,7 +39,7 @@ public class DroneDAO {
                 }
             }
             System.out.println("Drone successfully inserted: " + drone.getModelName());
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error inserting drone: " + e.getMessage());
         }
     }
@@ -62,7 +62,7 @@ public class DroneDAO {
             pstmt.executeUpdate();
             System.out.println("Drone successfully updated: " + drone.getModelName());
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error updating drone: " + e.getMessage());
         }
     }
@@ -76,7 +76,7 @@ public class DroneDAO {
             pstmt.executeUpdate();
             System.out.println("Drone with ID " + id + " successfully deleted.");
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error deleting drone: " + e.getMessage());
         }
     }
@@ -109,7 +109,7 @@ public class DroneDAO {
                 return null;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving drone: " + e.getMessage());
             return null;
         }
@@ -140,7 +140,7 @@ public class DroneDAO {
             }
             return drones;
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving drones: " + e.getMessage());
             return drones;
         }

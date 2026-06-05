@@ -34,7 +34,7 @@ public class PartDAO {
 
             pstmt.executeUpdate();
             System.out.println("Part successfully inserted: " + part.getName());
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error inserting part: " + e.getMessage());
 
         }
@@ -56,7 +56,7 @@ public class PartDAO {
             pstmt.executeUpdate();
             System.out.println("Part successfully updated: " + part.getName());
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error updating part: " + e.getMessage());
         }
     }
@@ -71,7 +71,7 @@ public class PartDAO {
             pstmt.executeUpdate();
             System.out.println("Part with ID " + id + " successfully deleted.");
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error deleting Part: " + e.getMessage());
         }
     }
@@ -105,7 +105,7 @@ public class PartDAO {
                 return null;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving part: " + e.getMessage());
             return null;
         }
@@ -138,7 +138,7 @@ public class PartDAO {
             }
             return parts;
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving parts: " + e.getMessage());
             return parts;
         }

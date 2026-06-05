@@ -36,7 +36,7 @@ public class FlightLogDAO {
 
             pstmt.executeUpdate();
             System.out.println("FlightLog successfully inserted: " + flightLog.getDate());
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error inserting flightLog: " + e.getMessage());
         }
     }
@@ -59,7 +59,7 @@ public class FlightLogDAO {
             pstmt.executeUpdate();
             System.out.println("FlightLog successfully updated: " + flightLog.getDate());
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error updating flightLog: " + e.getMessage());
         }
     }
@@ -73,7 +73,7 @@ public class FlightLogDAO {
             pstmt.executeUpdate();
             System.out.println("FlightLog with ID " + id + " successfully deleted.");
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error deleting flightLog: " + e.getMessage());
         }
     }
@@ -111,7 +111,7 @@ public class FlightLogDAO {
                 return null;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving flightLog: " + e.getMessage());
             return null;
         }
@@ -148,7 +148,7 @@ public class FlightLogDAO {
             }
             return flightLogs;
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving flightLogs: " + e.getMessage());
             return flightLogs;
         }

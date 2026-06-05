@@ -36,7 +36,7 @@ public class PilotDAO {
             }
 
             System.out.println("Pilot successfully inserted " + pilot.getName());
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.err.println("Error inserting pilot: " + e.getMessage());
         }
     }
@@ -59,7 +59,7 @@ public class PilotDAO {
             pstmt.executeUpdate();
             System.out.println("Pilot successfully updated: " + pilot.getName());
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.err.println("Error updating pilot: " + e.getMessage());
         }
     }
@@ -74,7 +74,7 @@ public class PilotDAO {
             pstmt.executeUpdate();
             System.out.println("Pilot with ID " + id + " successfully deleted.");
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error deleting pilot: " + e.getMessage());
         }
     }
@@ -106,7 +106,7 @@ public class PilotDAO {
                 return null;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.err.println("Error retrieving pilot: " + e.getMessage());
             return null;
         }
@@ -137,7 +137,7 @@ public class PilotDAO {
             }
             return pilots;
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error retrieving pilots: " + e.getMessage());
             return pilots;
         }
@@ -161,7 +161,7 @@ public class PilotDAO {
 
             pstmt.executeUpdate();
             System.out.println("Pilot successfully registered: " + pilot.getName());
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error registering pilot: " + e.getMessage());
         }
     }
@@ -176,7 +176,7 @@ public class PilotDAO {
                 return rs.getInt(1) > 0;
             }
             return false;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error checking username: " + e.getMessage());
         }
         return false;
@@ -209,7 +209,7 @@ public class PilotDAO {
                     );
                 }
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException  e) {
             System.err.println("Error during login: " + e.getMessage());
         }
 

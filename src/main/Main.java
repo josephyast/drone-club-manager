@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Drone Management System Initialization");
 
-        DatabaseConnection dbConnection = new DatabaseConnection();
+        DatabaseConnection dbConnection = DatabaseConnection.getInstance();
 
         DatabaseManager dbManager = new DatabaseManager(dbConnection);
 
@@ -120,7 +120,7 @@ public class Main {
             System.err.println("An error occurred during testing: " + e.getMessage());
         } finally {
             System.out.println("Closing DB Connection");
-            dbManager.closeConnection();
+            dbConnection.closeConnection();
         }
         System.out.println("Drone Management System Testing Completed");
     }
