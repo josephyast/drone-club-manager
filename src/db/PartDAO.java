@@ -23,7 +23,7 @@ public class PartDAO {
         String sql = "INSERT INTO parts (name, brand, type, drone_id, operating_hours, is_working) VALUES (?, ?, ?, ?, ?, ?);";
 
         try (Connection conn = dbConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, part.getName());
             pstmt.setString(2, part.getBrand());
@@ -34,6 +34,12 @@ public class PartDAO {
 
             pstmt.executeUpdate();
             System.out.println("Part successfully inserted: " + part.getName());
+
+            try (var generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    part.setId(generatedKeys.getInt(1));
+                }
+            }
         } catch (SQLException  e) {
             System.err.println("Error inserting part: " + e.getMessage());
 

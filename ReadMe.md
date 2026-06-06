@@ -45,5 +45,63 @@
 | **DroneDAO**           | Verwaltet die Datenbankzugriffe für die Drohnen Entitäten.                                                              |
 | **FlightLogDAO**       | Realisiert relationale Abfragen und lädt vollständige Flugprotokolle inklusive verknüpfter Piloten und Drohnen Objekte. |
 | **PartDAO**            | Steuert die datenbankseitige Verwaltung aller Drohnenkomponenten und deren Zuordnung zu den Drohnen.                    |
-| **NetworkManagerr**    | Koordiniert Kundenanforderungen und sorgt für konfliktfreie Frequenzzuweisung.                                          |
+| **NetworkManager**     | Koordiniert Kundenanforderungen und sorgt für konfliktfreie Frequenzzuweisung.                                          |
 | **PasswordHasher**     | Bietet Funktionen zum sicheren Hashen von Passwörtern unter Verwendung von SHA-256.                                     |
+
+## Datenstruktur
+
+Die Anwendung verwendet eine lokale SQLite Datenbank, um Projektdaten dauerhaft zu speichern. Tabellenstrukturen, Schlüssel und relationale Links sind wie folgt strukturiert:
+### 1. Existierende Tabellen und gespeicherte Informationen
+
+* **`pilots`** (Verwaltet die Benutzer und Profildaten der Piloten)
+    * `id`: Primary Key (INTEGER, AUTOINCREMENT)
+    * `name`: Vollständiger Name des Piloten (TEXT, NOT NULL)
+    * `username`: Eindeutiger Benutzername für Authentifizierung (TEXT, UNIQUE, NOT NULL)
+    * `password_hash`: Sicher gehashtes Passwort (TEXT, NOT NULL)
+    * `experience_level`: Einstufung wie EXPERT, ADVANCED (TEXT)
+    * `total_flight_hours`: Gesamtflugzeit im Duration Format (TEXT)
+    * `assigned_frequency`: Zugewiesene Funkfrequenz (REAL)
+    * `is_active`: Status, ob der Pilot aktiv ist (INTEGER)
+
+* **`drones`** (Repräsentiert die im System registrierten Drohnen)
+    * `id`: Primary Key (INTEGER, AUTOINCREMENT)
+    * `model_name`: Modellname der Drohne (TEXT, NOT NULL)
+    * `type`: Drohnenkategorie aus dem DroneType-Enum (TEXT)
+    * `weight`: Gewicht der Drohne in Gramm oder Kilogramm (REAL)
+    * `is_functional`: Betriebsbereitschaft der Drohne (INTEGER)
+    * `build_date`: Baudatum der Drohne (TEXT)
+    * `last_maintenance_date`: Datum der letzten Wartung (TEXT)
+    * `total_flight_time`: Gesamte Flugzeit der Drohne als Duration (TEXT)
+    * `current_frequency`: Aktuell genutzte Frequenz (REAL)
+
+* **`flight_logs`** (Dokumentiert alle absolvierten Flüge und Protokolle)
+    * `id`: Primary Key (INTEGER, AUTOINCREMENT)
+    * `pilot_id`: Foreign Key (INTEGER, verweist auf `pilots(id)`)
+    * `drone_id`: Foreign Key (INTEGER, verweist auf `drones(id)`)
+    * `date`: Flugdatum (TEXT)
+    * `flight_duration`: Dauer des Fluges als Duration (TEXT)
+    * `comment`: Optionale Anmerkung zum Flugverlauf (TEXT)
+    * `used_frequency`: Während des Fluges genutzte Frequenz (REAL)
+    * `location`: Ort des Fluges (TEXT)
+
+* **`parts`** (Verwaltet die einzelnen technischen Komponenten der Drohnen)
+    * `id`: Primary Key (INTEGER, AUTOINCREMENT)
+    * `name`: Name des Bauteils (TEXT, NOT NULL)
+    * `brand`: Marke des Teils (TEXT)
+    * `type`: Komponententyp aus dem PartType Enum (TEXT)
+    * `drone_id`: Foreign Key (INTEGER, verweist auf `drones(id)`)
+    * `operating_hours`: Bisherige Betriebsstunden des Bauteils (TEXT)
+    * `is_working`: Funktionstüchtigkeit des Teils (INTEGER)
+
+---
+
+### 2. Beziehungen zwischen den Tabellen (Relations)
+
+Um Redundanzen zu vermeiden und die Datenintegrität zu gewährleisten, wurden folgende **1:n (One to Many)** Beziehungen über Fremdschlüssel (Foreign Keys) realisiert:
+
+* **`pilots` zu `flight_logs` (1:n)**
+    * *Beschreibung:* Ein Pilot kann im Laufe der Zeit viele Flüge absolvieren und besitzt somit mehrere Einträge in der Tabelle `flight_logs`. Ein spezifisches Flugprotokoll (`flight_log`) ist jedoch immer genau einem einzigen Piloten zugeordnet via `pilot_id`.
+* **`drones` zu `flight_logs` (1:n)**
+    * *Beschreibung:* Eine Drohne kann für viele verschiedene Flüge gestartet und in `flight_logs` dokumentiert werden. Jedes einzelne Protokoll bezieht sich jedoch über `drone_id` auf genau eine spezifische Drohne.
+* **`drones` zu `parts` (1:n)**
+    * *Beschreibung:* Eine Drohne besteht aus mehreren einzelnen Komponenten (z. B. Motoren, Flight Controller, Propeller). Daher können in der Tabelle `parts` viele Bauteile über `drone_id` derselben Drohne zugewiesen sein. Ein einzelnes Bauteil ist jedoch fest in genau einer Drohne verbaut.

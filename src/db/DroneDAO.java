@@ -132,7 +132,7 @@ public class DroneDAO {
                         rs.getDouble("weight"),
                         rs.getInt("is_functional") == 1,
                         java.time.LocalDate.parse(rs.getString("build_date")),
-                        java.time.LocalDate.parse(rs.getString("last_maintenanceD_date")),
+                        java.time.LocalDate.parse(rs.getString("last_maintenance_date")),
                         java.time.Duration.parse(rs.getString("total_flight_time")),
                         rs.getDouble("current_frequency")
                 );
