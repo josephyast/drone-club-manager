@@ -11,17 +11,13 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Drone Management System Initialization");
 
-        DatabaseConnection dbConnection = DatabaseConnection.getInstance();
-
-        DatabaseManager dbManager = new DatabaseManager(dbConnection);
-
-
+        DatabaseManager dbManager = new DatabaseManager();
         dbManager.createTableIfNotExists();
 
-        PilotDAO pilotDAO = new PilotDAO(dbConnection);
-        DroneDAO droneDAO = new DroneDAO(dbConnection);
-        FlightLogDAO flightLogDAO = new FlightLogDAO(dbConnection);
-        PartDAO partDAO = new PartDAO(dbConnection);
+        PilotDAO pilotDAO = new PilotDAO();
+        DroneDAO droneDAO = new DroneDAO();
+        FlightLogDAO flightLogDAO = new FlightLogDAO();
+        PartDAO partDAO = new PartDAO();
 
         try{
             System.out.println("Insert 5 Pilots");
@@ -118,9 +114,6 @@ public class Main {
             }
         } catch (Exception e) {
             System.err.println("An error occurred during testing: " + e.getMessage());
-        } finally {
-            System.out.println("Closing DB Connection");
-            dbConnection.closeConnection();
         }
         System.out.println("Drone Management System Testing Completed");
     }

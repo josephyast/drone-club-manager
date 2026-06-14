@@ -6,12 +6,6 @@ import java.sql.Statement;
 
 public class DatabaseManager {
 
-    private final DatabaseConnection dbConnection;
-
-    public DatabaseManager(DatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
-    }
-
     public void createTableIfNotExists() {
         String createPilots = "CREATE TABLE IF NOT EXISTS pilots (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -56,15 +50,16 @@ public class DatabaseManager {
                 "is_working INTEGER, " +
                 "FOREIGN KEY(drone_id) REFERENCES drones(id));";
 
-        try {
-            Connection conn = dbConnection.getConnection();
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(createPilots);
-                stmt.execute(createDrones);
-                stmt.execute(createFlightLogs);
-                stmt.execute(createParts);
-                System.out.println("Tables created successfully.");
-            }
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute(createPilots);
+            stmt.execute(createDrones);
+            stmt.execute(createFlightLogs);
+            stmt.execute(createParts);
+
+            System.out.println("Tables created successfully.");
+
         } catch (SQLException e) {
             System.err.println("Error creating tables: " + e.getMessage());
         }
