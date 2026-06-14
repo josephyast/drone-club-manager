@@ -7,16 +7,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class PilotDAO {
-    private final DatabaseConnection dbConnection;
 
-    public PilotDAO(DatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
-    }
+
 
     public void insertPilot(Pilot pilot) {
         String sql = "INSERT INTO pilots (name,username,password_hash, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?,?,?);";
 
-        try(Connection conn = dbConnection.getConnection();
+        try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, pilot.getName());
@@ -44,7 +41,7 @@ public class PilotDAO {
     public void updatePilot(Pilot pilot) {
         String sql = "UPDATE pilots SET name = ?,username = ?, password_hash = ?, experience_level = ?, total_flight_hours = ?, assigned_frequency = ?, is_active = ? WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, pilot.getName());
@@ -67,7 +64,7 @@ public class PilotDAO {
     public void deletePilot(int id) {
         String sql = "DELETE FROM pilots WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -82,7 +79,7 @@ public class PilotDAO {
     public Pilot getPilotById(int id) {
         String sql = "SELECT * FROM pilots WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -116,7 +113,7 @@ public class PilotDAO {
         java.util.List<Pilot> pilots = new java.util.ArrayList<>();
         String sql = "SELECT * FROM pilots;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             var rs = pstmt.executeQuery();
@@ -148,7 +145,7 @@ public class PilotDAO {
         String hashedPassword = util.PasswordHasher.hashPassword(password);
         String sql = "INSERT INTO pilots (name, username, password_hash, experience_level, total_flight_hours, assigned_frequency, is_active) VALUES (?,?,?,?,?,?,?);";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setString(1, pilot.getName());
@@ -168,7 +165,7 @@ public class PilotDAO {
 
     public boolean isUsernameTaken(String username){
         String sql = "SELECT COUNT(*) FROM pilots WHERE username = ?;";
-        try(Connection conn = dbConnection.getConnection();
+        try(Connection conn = DatabaseConnection.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             var rs = pstmt.executeQuery();
@@ -185,7 +182,7 @@ public class PilotDAO {
     public Pilot loginPilot(String username, String password) {
         String sql = "SELECT * FROM pilots WHERE username = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setString(1,username);

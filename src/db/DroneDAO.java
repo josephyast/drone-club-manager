@@ -10,16 +10,11 @@ import java.sql.Statement;
 
 public class DroneDAO {
     
-    private final DatabaseConnection dbConnection;
-    
-    public DroneDAO(DatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
-    }
     
     public void insertDrone(Drone drone) {
         String sql = "INSERT INTO drones (model_name, type, weight, is_functional, build_date, last_maintenance_date, total_flight_time, current_frequency) VALUES (?,?,?,?,?,?,?,?);";
 
-        try(Connection conn = dbConnection.getConnection();
+        try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, drone.getModelName());
@@ -46,7 +41,7 @@ public class DroneDAO {
 
     public void updateDrone(Drone drone) {
         String sql = "UPDATE drones SET model_name = ?, type = ?, weight = ?, is_functional = ?, build_date = ?, last_maintenance_date = ?, total_flight_time = ?, current_frequency = ? WHERE id = ?;";
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, drone.getModelName());
@@ -69,7 +64,7 @@ public class DroneDAO {
     public void deleteDrone(int id) {
         String sql = "DELETE FROM drones WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -84,7 +79,7 @@ public class DroneDAO {
     public Drone getDroneById(int id) {
         String sql = "SELECT * FROM drones WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -119,7 +114,7 @@ public class DroneDAO {
         java.util.List<Drone> drones = new java.util.ArrayList<>();
         String sql = "SELECT * FROM drones;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             var rs = pstmt.executeQuery();

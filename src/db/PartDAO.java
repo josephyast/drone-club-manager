@@ -10,19 +10,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class PartDAO {
-
-    private final DatabaseConnection dbConnection;
+    
     private final DroneDAO droneDAO;
 
-    public PartDAO(DatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
-        this.droneDAO = new DroneDAO(dbConnection);
+    public PartDAO() {
+        this.droneDAO = new DroneDAO();
     }
 
     public void insertPart(Part part) {
         String sql = "INSERT INTO parts (name, brand, type, drone_id, operating_hours, is_working) VALUES (?, ?, ?, ?, ?, ?);";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, part.getName());
@@ -48,7 +46,7 @@ public class PartDAO {
 
     public void updatePart(Part part) {
         String sql = "UPDATE parts SET name = ?, brand = ?, type = ?, drone_id = ?, operating_hours = ?, is_working = ? WHERE id = ?;";
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, part.getName());
@@ -70,7 +68,7 @@ public class PartDAO {
     public void deletePart(int id) {
         String sql = "DELETE FROM parts WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -85,7 +83,7 @@ public class PartDAO {
     public Part getPartById(int id) {
         String sql = "SELECT * FROM parts WHERE id = ?;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -121,7 +119,7 @@ public class PartDAO {
         java.util.List<Part> parts = new java.util.ArrayList<>();
         String sql = "SELECT * FROM parts;";
 
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             var rs = pstmt.executeQuery();
@@ -167,7 +165,9 @@ public class PartDAO {
 
         for (Part part : rawParts) {
             Drone realDrone = this.droneDAO.getDroneById(part.getDrone().getId());
-            part.setDrone(realDrone);
+            if(realDrone != null) {
+                part.setDrone(realDrone);
+            }
         }
 
         return rawParts;
