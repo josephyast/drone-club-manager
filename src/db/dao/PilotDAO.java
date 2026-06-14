@@ -1,5 +1,6 @@
-package db;
+package db.dao;
 
+import db.DatabaseConnection;
 import model.Pilot;
 
 import java.sql.Connection;

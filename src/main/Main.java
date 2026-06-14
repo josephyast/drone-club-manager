@@ -1,6 +1,10 @@
 package main;
 
 import db.*;
+import db.dao.DroneDAO;
+import db.dao.FlightLogDAO;
+import db.dao.PartDAO;
+import db.dao.PilotDAO;
 import model.*;
 
 import java.time.Duration;

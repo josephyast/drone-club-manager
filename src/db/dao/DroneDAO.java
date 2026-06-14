@@ -1,12 +1,12 @@
-package db;
+package db.dao;
 
+import db.DatabaseConnection;
 import model.Drone;
 
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class DroneDAO {
     

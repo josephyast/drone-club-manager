@@ -1,8 +1,8 @@
-package db;
+package db.dao;
 
+import db.DatabaseConnection;
 import model.*;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
