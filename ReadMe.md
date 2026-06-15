@@ -28,25 +28,52 @@
 - **Kapselung:** Konsistente Verwendung von'private' Eigenschaften mit geeigneten getter und setter Methoden.
 - **Systemprototypen:** 'DatabaseManager' und 'NetworkManager' sind mit methodenprototypen für die anstehenden erweiterungsphasen vorbereitet.
 - **Sichere Authentifizierung:** Implementierung eines PasswordHasher Moduls unter Verwendung des SHA-256-Algorithmus. Passwörter werden niemals im Klartext, sondern ausschließlich gehashed in der Datenbank gespeichert.
+- **Zentralisiertes Datenmanagement:** Alle Datenbankzugriffe erfolgen nun ausschließlich serverseitig. Der Client besitzt keine direkte Verbindung zur SQLite Datenbank mehr, was die Datensicherheit und integrität maßgeblich erhöht.
+- **Typsichere DTO Kommunikation:** Die Kommunikation zwischen Client und Server erfolgt nicht über fehleranfällige Strings oder Maps, sondern über dedizierte **Data Transfer Objects (DTOs)** (`PilotDTO`, `DroneDTO`, `PartDTO`, `FlightLogDTO`). Alle DTOs implementieren `java.io.Serializable` und dienen als reine Datencontainer. Der Austausch wird über `ObjectInputStream` und `ObjectOutputStream` abgewickelt.
+
+### Begründung der Socket Wahl
+Für den *Drone Club Manager* wurde eine verbindungsbasierte **TCP (`Socket` / `ServerSocket`)** auf Port `8080` gewählt.
+**Begründung:** Da über das Netzwerk kritische, konsistente und sicherheitsrelevante Daten wie Authentifizierungen, Pilot und Drone-Updates übertragen werden, darf unter keinen Umständen ein Paketverlust auftreten. TCP garantiert durch sein Handshake Verfahren, die Flusskontrolle und die Paket Reihenfolgeüberwachung eine **100% zuverlässige Datenübertragung**. Im Gegensatz zu UDP wird hier sichergestellt, dass jede Anfrage den Server vollständig und unverfälscht erreicht.
+
+### Multi Client Fähigkeit & Nebenläufigkeit
+Um mehrere Piloten gleichzeitig zu unterstützen, wurde der Server multi-threaded implementiert:
+* Der `DroneServer` wartet in einer Endlosschleife mittels `accept()` auf eingehende Verbindungen.
+* Jede neue Verbindung wird sofort an eine eigene Instanz von `ClientHandler` übergeben, die `Runnable` implementiert, und in einem **neuen Thread** gestartet. Dadurch blockieren sich Clients beim Verbindungsaufbau nicht gegenseitig.
+
+### Synchronisations-Konzept & Schutz vor Race Conditions
+Da eingebettete SQLite Datenbanken bei simultanen Schreibzugriffen blockieren oder Datenkorruption verursachen können, wurde ein striktes Thread Safety Konzept über ein zentrales Sperrobjekt (`dbLock`) innerhalb des `ClientHandler` realisiert:
+* **Schreiboperationen (ADD, UPDATE, DELETE):** Alle verändernden Operationen auf der Datenbank wurden explizit durch einen `synchronized(dbLock)` Block geschützt. Dadurch wird garantiert, dass schreibende Threads die Datenbank sequenziell manipulieren.
+* **Leseoperationen (GET_ALL):** Um die Systemperformance hoch zu halten, laufen reine Lesevorgänge außerhalb des synchronisierten Blocks. Mehrere Clients können somit gleichzeitig Daten abfragen, ohne blockiert zu werden.
+
+### Durchgeführte Test-Szenarien
+Die Stabilität und Korrektheit der Implementierung wurde durch zwei hochentwickelte Testklassen im `network`Paket verifiziert:
+1. `MultiClientTest`: Simuliert mithilfe eines `CountDownLatch` den exakt gleichzeitigen Zugriff von 5 Clients (3 Reader, 2 Writer), um die Stabilität unter hoher asynchroner Last nachzuweisen.
+2. `RaceConditionTest`: Provoziert eine gezielte Race Condition, bei der zwei Clients (`Client_A_Speedy` und `Client_B_Flash`) in derselben Millisekunde denselben Drohnen-Datensatz (ID 1) aktualisieren. Dank der `synchronized(dbLock)`Sperre verarbeitet der Server beide Anfragen ohne `SQLITE_BUSY` Ausnahmen erfolgreich nacheinander, wodurch die Datenintegrität gewahrt bleibt.
 
 ## Modul und Klassenübersicht
-| Klasse                 | Aufgabe                                                                                                                 |
-|:-----------------------|:------------------------------------------------------------------------------------------------------------------------|
-| **Pilot**              | Es speichert Benutzerdaten, z. B. ID, Name und Gesamtflugzeit.                                                          |
-| **Drone**              | Es stellt ein Drohne mit Eigenschaften wie Name, Gewicht und Typ dar.                                                   |
-| **Part**               | Verwaltet die einzelnen Komponenten, die mit der Drohne verbunden sind (z. B. Motoren, ESC).                            |
-| **FlightLog**          | Dokumentiert Flugdaten wie das verbrauchte Datum, die Dauer und die Batteriekapazität.                                  |
-| **DroneType**          | (Enum) Definiert die verschiedenen Drohnenkategorien                                                                    |
-| **ExperienceLevel**    | (Enum) Definiert die Einstufung der Piloten                                                                             |
-| **PartType**           | (Enum) Kategorisiert die Ersatzteile und Komponenten                                                                    |
-| **DatabaseConnection** | Verwaltet den Verbindungsaufbau zur lokalen SQLite-Datenbankdatei.                                                      |
-| **DatabaseManager**    | Zentralisiert den gesamten Zugriff auf die SQLite-Datenbank.                                                            |
-| **PilotDAO**           | Kapselt spezifische CRUD Operationen für Piloten, einschließlich sicherer Registrierungs und Login Logik.               |
-| **DroneDAO**           | Verwaltet die Datenbankzugriffe für die Drohnen Entitäten.                                                              |
-| **FlightLogDAO**       | Realisiert relationale Abfragen und lädt vollständige Flugprotokolle inklusive verknüpfter Piloten und Drohnen Objekte. |
-| **PartDAO**            | Steuert die datenbankseitige Verwaltung aller Drohnenkomponenten und deren Zuordnung zu den Drohnen.                    |
-| **NetworkManager**     | Koordiniert Kundenanforderungen und sorgt für konfliktfreie Frequenzzuweisung.                                          |
-| **PasswordHasher**     | Bietet Funktionen zum sicheren Hashen von Passwörtern unter Verwendung von SHA-256.                                     |
+| Klasse                                           | Aufgabe                                                                                                                 |
+|:-------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------|
+| **Pilot**                                        | Es speichert Benutzerdaten, z. B. ID, Name und Gesamtflugzeit.                                                          |
+| **Drone**                                        | Es stellt ein Drohne mit Eigenschaften wie Name, Gewicht und Typ dar.                                                   |
+| **Part**                                         | Verwaltet die einzelnen Komponenten, die mit der Drohne verbunden sind (z. B. Motoren, ESC).                            |
+| **FlightLog**                                    | Dokumentiert Flugdaten wie das verbrauchte Datum, die Dauer und die Batteriekapazität.                                  |
+| **DroneType**                                    | (Enum) Definiert die verschiedenen Drohnenkategorien                                                                    |
+| **ExperienceLevel**                              | (Enum) Definiert die Einstufung der Piloten                                                                             |
+| **PartType**                                     | (Enum) Kategorisiert die Ersatzteile und Komponenten                                                                    |
+| **DatabaseConnection**                           | Verwaltet den Verbindungsaufbau zur lokalen SQLite-Datenbankdatei.                                                      |
+| **DatabaseManager**                              | Zentralisiert den gesamten Zugriff auf die SQLite-Datenbank.                                                            |
+| **PilotDAO**                                     | Kapselt spezifische CRUD Operationen für Piloten, einschließlich sicherer Registrierungs und Login Logik.               |
+| **DroneDAO**                                     | Verwaltet die Datenbankzugriffe für die Drohnen Entitäten.                                                              |
+| **FlightLogDAO**                                 | Realisiert relationale Abfragen und lädt vollständige Flugprotokolle inklusive verknüpfter Piloten und Drohnen Objekte. |
+| **PartDAO**                                      | Steuert die datenbankseitige Verwaltung aller Drohnenkomponenten und deren Zuordnung zu den Drohnen.                    |
+| **NetworkManager**                               | Koordiniert Kundenanforderungen und sorgt für konfliktfreie Frequenzzuweisung.                                          |
+| **PasswordHasher**                               | Bietet Funktionen zum sicheren Hashen von Passwörtern unter Verwendung von SHA-256.                                     |
+| **Command**                                      | (Enum) Definiert das Kommunikations-Protokoll-Vokabular (`ADD_DRONE`, `UPDATE_DRONE`, etc.).                            |
+| **ClientRequest / ServerResponse**               | Die standardisierten Transport-Container für die Netzwerk-Pakete.                                                       |
+| **DroneServer**                                  | Öffnet den `ServerSocket(8080)` und wartet in einer Endlosschleife auf eingehende Clients.                              |
+| **ClientHandler**                                | Implementiert `Runnable`. Verarbeitet die Requests eines einzelnen Clients im eigenen Thread.                           |
+| **DroneClient**                                  | Ermöglicht es Client-Anwendungen, sich mit dem Server zu verbinden und Daten typsicher zu senden.                       |
+| **PilotDTO / DroneDTO / PartDTO / FlightLogDTO** | Reine, serialisierbare Datenbehälter für den sicheren Netzwerktransport.                                                |
 
 ## Datenstruktur
 

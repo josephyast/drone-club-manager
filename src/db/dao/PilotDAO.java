@@ -214,4 +214,43 @@ public class PilotDAO {
         System.out.println("Login failed for username or password.");
         return null;
     }
+
+    public boolean requestFrequency(int pilotId, double frequency) {
+        String sql = "UPDATE pilots SET assigned_frequency = ? WHERE id = ? AND is_active = 1;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, frequency);
+            pstmt.setInt(2, pilotId);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Frequency " + frequency + " successfully assigned to pilot ID: " + pilotId);
+                return true;
+            } else {
+                System.out.println("Frequency assignment failed: Pilot not found or inactive.");
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error requesting frequency for pilot: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void releaseFrequency(int pilotId) {
+        String sql = "UPDATE pilots SET assigned_frequency = 0.0 WHERE id = ?;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, pilotId);
+            pstmt.executeUpdate();
+            System.out.println("Frequency released successfully for pilot ID: " + pilotId);
+
+        } catch (SQLException e) {
+            System.err.println("Error releasing frequency for pilot: " + e.getMessage());
+        }
+    }
 }

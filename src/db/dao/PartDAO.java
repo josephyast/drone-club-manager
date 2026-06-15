@@ -173,4 +173,37 @@ public class PartDAO {
 
         return rawParts;
     }
+
+    public void attachPartToDrone(int partId, int droneId) {
+        String sql = "UPDATE parts SET drone_id = ? WHERE id = ?;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, droneId);
+            pstmt.setInt(2, partId);
+
+            pstmt.executeUpdate();
+            System.out.println("Part ID " + partId + " successfully attached to Drone ID " + droneId);
+
+        } catch (SQLException e) {
+            System.err.println("Error attaching part to drone: " + e.getMessage());
+        }
+    }
+
+    public void detachPartFromDrone(int partId) {
+        String sql = "UPDATE parts SET drone_id = NULL WHERE id = ?;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, partId);
+
+            pstmt.executeUpdate();
+            System.out.println("Part ID " + partId + " successfully detached from its drone.");
+
+        } catch (SQLException e) {
+            System.err.println("Error detaching part from drone: " + e.getMessage());
+        }
+    }
 }

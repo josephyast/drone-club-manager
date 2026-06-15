@@ -1,6 +1,8 @@
-package network;
+package network.dto;
 
-public class PilotDTO {
+import java.io.Serializable;
+
+public class PilotDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int id;

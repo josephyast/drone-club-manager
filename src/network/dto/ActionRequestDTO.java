@@ -2,7 +2,7 @@ package network.dto;
 
 import java.io.Serializable;
 
-public class ActionRequestDTO {
+public class ActionRequestDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int targetId;
