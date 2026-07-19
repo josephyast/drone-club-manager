@@ -65,8 +65,44 @@ public class ClientHandler implements Runnable {
 
         try {
             switch (command) {
-                case LOGIN -> { return new ServerResponse(true, "Login successful"); }
-                case LOGOUT -> { return new ServerResponse(true, "Logout successful"); }
+                case LOGIN -> {
+                    synchronized (dbLock) {
+                        PilotDTO loginData = (PilotDTO) request.getData();
+                        if (loginData == null || loginData.getUsername() == null || loginData.getPassword() == null) {
+                            return new ServerResponse(false, "Username or password missing.");
+                        }
+                        Pilot verifiedPilot = pilotDAO.loginPilot(loginData.getUsername(), loginData.getPassword());
+
+                        if (verifiedPilot != null) {
+                            PilotDTO responseDto = new PilotDTO(
+                                    verifiedPilot.getId(),
+                                    verifiedPilot.getName(),
+                                    verifiedPilot.getUsername(),
+                                    null,
+                                    verifiedPilot.getExperienceLevel().name(),
+                                    verifiedPilot.getTotalFlightHours().toSeconds(),
+                                    verifiedPilot.getAssignedFrequency(),
+                                    verifiedPilot.isActive()
+                            );
+                            return new ServerResponse(true, "Login successful", responseDto);
+                        } else {
+                            return new ServerResponse(false, "Invalid username or password.");
+                        }
+                    }
+                }
+                case LOGOUT -> {
+                    synchronized (dbLock) {
+                        if (request.getData() instanceof Integer) {
+                            int pilotId = (int) request.getData();
+                            pilotDAO.releaseFrequency(pilotId);
+
+                            System.out.println("Pilot with ID " + pilotId + " has successfully logged out.");
+                            return new ServerResponse(true, "Logout successful and frequency released.");
+                        }
+
+                        return new ServerResponse(true, "Logout successfully completed.");
+                    }
+                }
                 case REGISTER -> {
                     synchronized (dbLock) {
                         PilotDTO dto = (PilotDTO) request.getData();

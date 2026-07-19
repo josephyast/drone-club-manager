@@ -57,37 +57,4 @@ public class DroneClient {
             System.err.println("Disconnection error: " + e.getMessage());
         }
     }
-
-    public static void  main(String[] args){
-        DroneClient client = new DroneClient();
-        client.connect();
-
-        System.out.println("Sending LOGIN request...");
-        ClientRequest loginRequest = new ClientRequest(Command.LOGIN);
-        ServerResponse loginResponse = client.sendRequest(loginRequest);
-        if(loginResponse != null){
-            System.out.println("Server Success Status: " + loginResponse.isSuccess());
-            System.out.println("Server Message: "+loginResponse.getMessage());
-
-        }
-
-        System.out.println("Sending GET_ALL_DRONES request...");
-        ClientRequest droneRequest = new ClientRequest(Command.GET_ALL_DRONES);
-        ServerResponse droneResponse = client.sendRequest(droneRequest);
-        if(droneResponse != null){
-            System.out.println("Server Success Status: " + droneResponse.isSuccess());
-            System.out.println("Server Message: "+droneResponse.getMessage());
-        }
-
-        System.out.println("Sending Unimplemented Command");
-        ClientRequest pilotRequest = new ClientRequest(Command.ADD_PILOT);
-        ServerResponse pilotResponse = client.sendRequest(pilotRequest);
-        if (pilotResponse != null) {
-            System.out.println("Server Success Status: " + pilotResponse.isSuccess());
-            System.out.println("Server Message: " + pilotResponse.getMessage());
-        }
-
-        System.out.println();
-        client.disconnect();
-    }
 }
