@@ -6,6 +6,8 @@ out/
 .idea/
 *.iml
 gen/
+lib/
+*.db
 
 
 .apt_generated
