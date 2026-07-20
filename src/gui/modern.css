@@ -1,0 +1,309 @@
+
+.root {
+    -fx-base: #1E1E2E;
+    -fx-background-color: #1E1E2E;
+    -fx-text-fill: #CDD6F4;
+    -fx-font-family: "Inter", "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-font-size: 13px;
+    -fx-accent: #89B4FA;
+}
+
+.label {
+    -fx-text-fill: #CDD6F4;
+}
+
+.label-subtle {
+    -fx-text-fill: #A6ADC8;
+    -fx-font-size: 11px;
+}
+
+.label-title {
+    -fx-text-fill: #CDD6F4;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+
+.button {
+    -fx-background-color: #313244;
+    -fx-text-fill: #CDD6F4;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+    -fx-font-weight: 600;
+    -fx-border-width: 0;
+}
+
+.button:hover {
+    -fx-background-color: #45475A;
+}
+
+.button:pressed {
+    -fx-background-color: #585B70;
+}
+
+.button-accent {
+    -fx-background-color: #89B4FA;
+    -fx-text-fill: #11111B;
+}
+
+.button-accent:hover {
+    -fx-background-color: derive(#89B4FA, 15%);
+}
+
+.button-accent:pressed {
+    -fx-background-color: derive(#89B4FA, -15%);
+}
+
+.button-success {
+    -fx-background-color: #A6E3A1;
+    -fx-text-fill: #11111B;
+}
+
+.button-success:hover {
+    -fx-background-color: derive(#A6E3A1, 15%);
+}
+
+.button-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F38BA8;
+    -fx-border-color: #F38BA8;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+}
+
+.button-danger:hover {
+    -fx-background-color: #F38BA8;
+    -fx-text-fill: #11111B;
+}
+
+.button-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #89B4FA;
+    -fx-underline: true;
+    -fx-cursor: hand;
+    -fx-padding: 4px 2px;
+    -fx-font-weight: normal;
+}
+
+.button-link:hover {
+    -fx-text-fill: derive(#89B4FA, 25%);
+}
+
+
+
+.text-field, .password-field, .combo-box, .date-picker, .text-area {
+    -fx-background-color: #313244;
+    -fx-text-fill: #CDD6F4;
+    -fx-prompt-text-fill: #6C7086;
+    -fx-background-radius: 6px;
+    -fx-border-color: #45475A;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 6px 10px;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused,
+.date-picker:focused, .text-area:focused {
+    -fx-border-color: #89B4FA;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #313244;
+    -fx-text-fill: #CDD6F4;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #313244;
+    -fx-border-color: #45475A;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #45475A;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: #89B4FA;
+    -fx-text-fill: #11111B;
+}
+
+
+
+.table-view {
+    -fx-background-color: #1E1E2E;
+    -fx-border-color: #313244;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #181825;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #313244 transparent;
+    -fx-size: 36px;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #A6ADC8;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+.table-row-cell {
+    -fx-background-color: #1E1E2E;
+    -fx-border-color: transparent transparent #26273A transparent;
+    -fx-text-fill: #CDD6F4;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #21222F;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #313244;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #45475A;
+    -fx-text-fill: #89B4FA;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #CDD6F4;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 8px 10px;
+}
+
+.table-view:focused .table-row-cell:filled:selected .table-cell {
+    -fx-text-fill: #89B4FA;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: #6C7086;
+}
+
+
+.nav-bar {
+    -fx-background-color: #181825;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A6ADC8;
+    -fx-alignment: CENTER-LEFT;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 14px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-max-width: infinity;
+    -fx-graphic-text-gap: 10px;
+}
+
+.nav-button:hover {
+    -fx-background-color: #313244;
+    -fx-text-fill: #CDD6F4;
+}
+
+.nav-button-active {
+    -fx-background-color: #313244;
+    -fx-text-fill: #89B4FA;
+    -fx-border-color: #89B4FA transparent transparent transparent;
+    -fx-border-width: 0 0 0 3px;
+    -fx-border-color: transparent transparent transparent #89B4FA;
+}
+
+
+.app-header {
+    -fx-background-color: #181825;
+    -fx-border-color: transparent transparent #313244 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.app-header .label-title {
+    -fx-font-size: 16px;
+}
+
+
+.card {
+    -fx-background-color: #292C3C;
+    -fx-background-radius: 12px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 12, 0, 0, 4);
+}
+
+.card-value {
+    -fx-text-fill: #89B4FA;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.card-value-green {
+    -fx-text-fill: #A6E3A1;
+}
+
+.card-label {
+    -fx-text-fill: #A6ADC8;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+
+
+.status-available {
+    -fx-text-fill: #A6E3A1;
+    -fx-font-weight: bold;
+}
+
+.status-in-flight {
+    -fx-text-fill: #89B4FA;
+    -fx-font-weight: bold;
+}
+
+.status-maintenance {
+    -fx-text-fill: #F38BA8;
+    -fx-font-weight: bold;
+}
+
+
+.dialog-pane {
+    -fx-background-color: #1E1E2E;
+}
+
+.dialog-pane > *.button-bar > *.container {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: #CDD6F4;
+}
+
+.dialog-pane:header .header-panel {
+    -fx-background-color: #181825;
+}
+
+.dialog-pane:header .header-panel .label {
+    -fx-text-fill: #CDD6F4;
+    -fx-font-weight: bold;
+}
+
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #45475A;
+    -fx-background-radius: 6px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #585B70;
+}
+
+.separator .line {
+    -fx-border-color: #313244;
+}
