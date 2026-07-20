@@ -9,12 +9,12 @@ public class NetworkManager {
     private boolean isRunning = false;
 
 
-    public void StartServer() {
+    public void startServer() {
         this.isRunning = true;
         System.out.println("Server started on " + host + ":" + port);
     }
 
-    public void StopServer() {
+    public void stopServer() {
         this.isRunning = false;
         System.out.println("Server stopped.");
     }

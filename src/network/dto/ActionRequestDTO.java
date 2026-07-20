@@ -16,7 +16,7 @@ public class ActionRequestDTO implements Serializable {
 
     public ActionRequestDTO(int targetId, int associatedId, double value) {
         this.targetId = targetId;
-        this.associatedId = 0;
+        this.associatedId = associatedId;
         this.value = value;
     }
 

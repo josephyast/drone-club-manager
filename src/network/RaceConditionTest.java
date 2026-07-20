@@ -1,5 +1,6 @@
 package network;
 
+import model.DroneStatus;
 import network.dto.DroneDTO;
 import java.util.concurrent.CountDownLatch;
 
@@ -41,7 +42,7 @@ public class RaceConditionTest {
             latch.await();
 
             DroneDTO droneDTO = new DroneDTO(
-                    1, newmodelName, "TOOTHPICKS", 1.5, true, "2026-06-14", "2026-06-14", 3600, 2.4
+                    1, newmodelName, "TOOTHPICKS", 1.5, DroneStatus.AVAILABLE.name(), "2026-06-14", "2026-06-14", 3600, 2.4
             );
 
             ClientRequest request = new ClientRequest(Command.UPDATE_DRONE, droneDTO);

@@ -56,5 +56,12 @@ public class PilotDTO implements Serializable {
     public boolean isActive() {
         return isActive;
     }
+
+    public String getFormattedFlightHours() {
+        long totalSeconds = this.totalFlightHoursInSeconds;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        return String.format("%dh %dm", hours, minutes);
+    }
 }
 

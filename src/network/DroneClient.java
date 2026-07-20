@@ -28,6 +28,10 @@ public class DroneClient {
         }
     }
 
+    public boolean isConnected() {
+        return socket != null && !socket.isClosed() && socket.isConnected();
+    }
+
     public ServerResponse sendRequest(ClientRequest request){
         try{
             if (socket == null || socket.isClosed()) {

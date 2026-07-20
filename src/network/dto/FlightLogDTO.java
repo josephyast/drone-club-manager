@@ -5,7 +5,7 @@ public class FlightLogDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int id;
-    private int PilotId;
+    private int pilotId;
     private String pilotName;
     private int droneId;
     private String droneModelName;
@@ -15,9 +15,9 @@ public class FlightLogDTO implements Serializable {
     private double usedFrequency;
     private String location;
 
-    public FlightLogDTO(int id, int pilotId, String pilotName, int droneId, String droneModelName, String date, long flightDurationInSeconds, String comment, double usedFrequency, String location) {
+    public FlightLogDTO(int id, int pilotid, String pilotName, int droneId, String droneModelName, String date, long flightDurationInSeconds, String comment, double usedFrequency, String location) {
         this.id = id;
-        PilotId = pilotId;
+        pilotId = pilotid;
         this.pilotName = pilotName;
         this.droneId = droneId;
         this.droneModelName = droneModelName;
@@ -33,7 +33,7 @@ public class FlightLogDTO implements Serializable {
     }
 
     public int getPilotId() {
-        return PilotId;
+        return pilotId;
     }
 
     public String getPilotName() {
@@ -66,5 +66,17 @@ public class FlightLogDTO implements Serializable {
 
     public String getLocation() {
         return location;
+    }
+
+    public String getFormattedDuration() {
+        long totalSeconds = this.flightDurationInSeconds;
+        long days = totalSeconds / (24 * 3600);
+        totalSeconds %= (24 * 3600);
+        long hours = totalSeconds / 3600;
+        totalSeconds %= 3600;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+
+        return String.format("%dd %dh %dm %ds", days, hours, minutes, seconds);
     }
 }
