@@ -93,7 +93,7 @@ public class FlightLogDAO {
                 int droneId = rs.getInt("drone_id");
 
                 model.Pilot pilot = new model.Pilot(pilotId, "Unknown","Unknown","Unknown", ExperienceLevel.BEGINNER, Duration.ZERO, 0.0, false);
-                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, false, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
+                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, DroneStatus.AVAILABLE, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
 
                 FlightLog flightLog = new FlightLog(
                         rs.getInt("id"),
@@ -132,7 +132,7 @@ public class FlightLogDAO {
                 int droneId = rs.getInt("drone_id");
 
                 model.Pilot pilot = new model.Pilot(pilotId, "Unknown", "Unknown","Unknown",ExperienceLevel.BEGINNER, Duration.ZERO, 0.0, false);
-                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, false, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
+                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, DroneStatus.AVAILABLE, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
 
                 FlightLog flightLog = new FlightLog(
                         rs.getInt("id"),

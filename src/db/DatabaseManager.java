@@ -22,7 +22,7 @@ public class DatabaseManager {
                 "model_name TEXT NOT NULL, " +
                 "type TEXT, " +
                 "weight REAL, " +
-                "is_functional INTEGER, " +
+                "status TEXT DEFAULT 'AVAILABLE', "+
                 "build_date TEXT, " +
                 "last_maintenance_date TEXT, " +
                 "total_flight_time TEXT, " +

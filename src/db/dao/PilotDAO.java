@@ -1,6 +1,7 @@
 package db.dao;
 
 import db.DatabaseConnection;
+import model.ExperienceLevel;
 import model.Pilot;
 
 import java.sql.Connection;
@@ -252,5 +253,14 @@ public class PilotDAO {
         } catch (SQLException e) {
             System.err.println("Error releasing frequency for pilot: " + e.getMessage());
         }
+    }
+
+    public void updatePilotExperienceLevel(Pilot pilot) {
+        long hours = pilot.getTotalFlightHours().toHours();
+        if (hours >= 1000) pilot.setExperienceLevel(ExperienceLevel.EXPERT);
+        else if (hours >= 500) pilot.setExperienceLevel(ExperienceLevel.ADVANCED);
+        else if (hours >= 100) pilot.setExperienceLevel(ExperienceLevel.INTERMEDIATE);
+        else pilot.setExperienceLevel(ExperienceLevel.BEGINNER);
+        updatePilot(pilot);
     }
 }

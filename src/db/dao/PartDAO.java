@@ -93,7 +93,7 @@ public class PartDAO {
             if (rs.next()) {
                 int droneId = rs.getInt("drone_id");
 
-                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, false, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
+                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, DroneStatus.AVAILABLE, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
                 Part part = new Part(
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -129,7 +129,7 @@ public class PartDAO {
 
                 int droneId = rs.getInt("drone_id");
 
-                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, false, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
+                model.Drone drone = new model.Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, DroneStatus.AVAILABLE, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
                 Part part = new Part(
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -206,4 +206,62 @@ public class PartDAO {
             System.err.println("Error detaching part from drone: " + e.getMessage());
         }
     }
+
+    public List<Part> getPartsByDroneId(int droneId) {
+        List<Part> parts = new java.util.ArrayList<>();
+        String sql = "SELECT * FROM parts WHERE drone_id = ?;";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, droneId);
+            var rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Drone drone = new Drone(droneId, "Unknown", DroneType.TOOTHPICKS, 0.0, DroneStatus.AVAILABLE, LocalDate.now(), LocalDate.now(), Duration.ZERO, 0.0);
+
+                Part part = new Part(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("brand"),
+                        PartType.valueOf(rs.getString("type")),
+                        drone,
+                        Duration.parse(rs.getString("operating_hours")),
+                        rs.getInt("is_working") == 1
+                );
+                parts.add(part);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving parts for drone " + droneId + ": " + e.getMessage());
+        }
+        return parts;
+    }
+
+    public void fixPart(int partId) {
+        String sql = "UPDATE parts SET is_working = 1 WHERE id = ?;";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, partId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error fixing part: " + e.getMessage());
+        }
+    }
+
+    public void updatePartStatus(int id, boolean isWorking) {
+        String sql = "UPDATE parts SET is_working = ? WHERE id = ?;";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, isWorking ? 1 : 0);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error updating part status: " + e.getMessage());
+        }
+    }
+
+
+
 }
