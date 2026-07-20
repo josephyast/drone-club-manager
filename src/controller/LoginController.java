@@ -10,6 +10,7 @@ import network.DroneClient;
 import network.ClientRequest;
 import network.ServerResponse;
 import network.Command;
+import network.dto.PilotDTO;
 
 public class LoginController {
 
@@ -43,7 +44,7 @@ public class LoginController {
             protected ServerResponse call() throws Exception {
                 client.connect();
 
-                network.dto.PilotDTO loginData = new network.dto.PilotDTO(
+                PilotDTO loginData = new PilotDTO(
                         0,
                         "",
                         username,
@@ -58,14 +59,23 @@ public class LoginController {
             }
         };
 
-
         loginTask.setOnSucceeded(workerStateEvent -> {
             view.getLoginButton().setDisable(false);
             ServerResponse response = loginTask.getValue();
 
             if (response != null && response.isSuccess()) {
                 view.setStatusMessage("Login successful You are being redirected", false);
-                switchToDashboard();
+
+                int loggedInPilotId = 0;
+                if (response.getData() instanceof PilotDTO pilot) {
+                    loggedInPilotId = pilot.getId();
+                } else if (response.getData() instanceof Integer id) {
+                    loggedInPilotId = id;
+                } else if (response.getData() instanceof Double idDouble) {
+                    loggedInPilotId = idDouble.intValue();
+                }
+
+                switchToDashboard(loggedInPilotId);
             } else {
                 String errMsg = (response != null) ? response.getMessage() : "Incorrect username or password!";
                 view.setStatusMessage(errMsg, true);
@@ -92,9 +102,10 @@ public class LoginController {
         primaryStage.setTitle("Drone Operations Center - Register");
     }
 
-    private void switchToDashboard() {
+    private void switchToDashboard(int loggedInPilotId) {
         MainDashboardView dashboardView = new MainDashboardView();
-        new DashboardController(dashboardView, primaryStage, client);
+
+        new DashboardController(dashboardView, primaryStage, client, loggedInPilotId);
 
         Scene scene = new Scene(dashboardView, 800, 600);
         primaryStage.setScene(scene);

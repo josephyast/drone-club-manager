@@ -108,6 +108,7 @@ public class MainDashboardView extends BorderPane {
         btnAttachPart.setVisible(false);
         btnDetachPart.setVisible(false);
         btnFixPart.setVisible(false);
+        btnFlightNow.setVisible(false);
     }
 
     public Button getBtnDrones() { return btnDrones; }

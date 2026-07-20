@@ -25,11 +25,12 @@ public class DashboardController {
     private final DroneClient client;
     private int activeFlightLogId = 0;
     private String currentCategory = "Drones";
+    private int loggedInPilotId;
 
-    public DashboardController(MainDashboardView view, Stage primaryStage, DroneClient client) {
-        this.view = view;
+    public DashboardController(MainDashboardView view, Stage primaryStage, DroneClient client, int loggedInPilotId) {        this.view = view;
         this.primaryStage = primaryStage;
         this.client = client;
+        this.loggedInPilotId = loggedInPilotId;
 
         initEventHandlers();
         loadCategoryData("Drones");
@@ -64,11 +65,7 @@ public class DashboardController {
         view.getBtnAdd().setVisible(false);
         view.getBtnRemove().setVisible(false);
         view.getBtnUpdate().setVisible(false);
-        view.getBtnFreqRequest().setVisible(false);
-        view.getBtnFreqRelease().setVisible(false);
-        view.getBtnAttachPart().setVisible(false);
-        view.getBtnDetachPart().setVisible(false);
-        view.getBtnFixPart().setVisible(false);
+        view.hideSpecialButtons();
 
         Command fetchCommand = switch (category) {
             case "Pilots" -> {
@@ -87,12 +84,17 @@ public class DashboardController {
                 view.getBtnFixPart().setVisible(true);
                 yield Command.GET_ALL_PARTS;
             }
-            default -> {
+            case "Drones" -> {
                 setupDroneColumns();
                 view.getBtnAdd().setVisible(true);
                 view.getBtnRemove().setVisible(true);
                 view.getBtnUpdate().setVisible(true);
+                view.getBtnFlightNow().setVisible(true);
                 yield Command.GET_ALL_DRONES;
+            }
+            default -> {
+                showError("Unknown Category", "Invalid category selected", "The selected category is not recognized.");
+                yield null;
             }
         };
 
@@ -434,7 +436,7 @@ public class DashboardController {
             return;
         }
 
-        FlightNowDialog dialog = new FlightNowDialog();
+        FlightNowDialog dialog = new FlightNowDialog(this.loggedInPilotId);
 
         dialog.showAndWait().ifPresent(setup -> {
             startActualFlight(drone, setup);
@@ -504,14 +506,16 @@ public class DashboardController {
         alert.showAndWait();
 
         long endTime = System.currentTimeMillis();
-        long durationSeconds = (endTime - startTime) / 1000;
+        long realElapsedMillis = endTime - startTime;
+
+        long virtualDurationSeconds = (realElapsedMillis * 60) / 1000;
 
         TextInputDialog commentDialog = new TextInputDialog();
         commentDialog.setTitle("Flight Finished");
         commentDialog.setHeaderText("Enter flight comment:");
 
         String comment = commentDialog.showAndWait().orElse("No comment provided");
-        executeLanding(drone, durationSeconds, setup, comment);
+        executeLanding(drone, virtualDurationSeconds, setup, comment);
     }
     private void startActualFlight(DroneDTO drone, FlightSetupDTO setup) {
         Task<ServerResponse> startTask = new Task<>() {

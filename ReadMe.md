@@ -31,6 +31,15 @@
 - **Zentralisiertes Datenmanagement:** Alle Datenbankzugriffe erfolgen nun ausschließlich serverseitig. Der Client besitzt keine direkte Verbindung zur SQLite Datenbank mehr, was die Datensicherheit und integrität maßgeblich erhöht.
 - **Typsichere DTO Kommunikation:** Die Kommunikation zwischen Client und Server erfolgt nicht über fehleranfällige Strings oder Maps, sondern über dedizierte **Data Transfer Objects (DTOs)** (`PilotDTO`, `DroneDTO`, `PartDTO`, `FlightLogDTO`). Alle DTOs implementieren `java.io.Serializable` und dienen als reine Datencontainer. Der Austausch wird über `ObjectInputStream` und `ObjectOutputStream` abgewickelt.
 
+## Funktionale Änderungen im Entwicklungsverlauf
+
+Im Vergleich zur ursprünglichen Planung haben sich im Laufe der Implementierung folgende Punkte verändert bzw. weiterentwickelt:
+
+- **`NetworkManager` verworfen zugunsten von `DroneServer` + `ClientHandler`:** `NetworkManager` war als früher Prototyp für die Serverkoordination gedacht (`StartServer()`, `StopServer()`, `broadcastFrequencyList()`). In der finalen Architektur übernehmen stattdessen `DroneServer` (Verbindungsannahme über `ServerSocket`) und `ClientHandler` (`dbLock`-Synchronisierung) diese Aufgabe vollständig. `NetworkManager` bleibt als unbenutzter Altcode im `network`Paket zurück.
+- **Drohnenstatus von einem einfachen Boolean zu einem Enum weiterentwickelt:** Ursprünglich war für `drones` nur ein Feld `is_functional` (Betriebsbereitschaft, INTEGER/Boolean) geplant. Umgesetzt wurde stattdessen das Enum `DroneStatus` (`AVAILABLE`, `IN_FLIGHT`, `MAINTENANCE`) mit einer eigenen `status`Spalte (`TEXT DEFAULT 'AVAILABLE'`), da ein reiner Boolean den Flugbetrieb (verfügbar / gerade im Flug / wartungsbedürftig) nicht abbilden konnte.
+- **Frequenzverwaltung erweitert:** Statt nur `assigned_frequency` auf dem Piloten zu verwalten, wurde zusätzlich `FrequencyManager` eingeführt: eine feste Liste von 25 realen FPV-Frequenzen (1630–2505 MHz) mit `synchronized` Lock-/Release-Mechanismus, damit zwei Piloten nie versehentlich dieselbe Frequenz gleichzeitig belegen.
+- **Flugworkflow um „Flight Now“ erweitert:** Zusätzlich zur reinen Flugprotokoll-Verwaltung (CRUD auf `flight_logs`) wurde ein zweistufiger Start/Lande-Workflow ergänzt (`FlightSetupDTO`, `ADD_FLIGHT` → `LAND_DRONE`), der den Drohnenstatus automatisch zwischen `AVAILABLE` → `IN_FLIGHT` → `AVAILABLE`/`MAINTENANCE` umschaltet und die Betriebsstunden der montierten `parts` bei jedem Flug fortschreibt.
+
 ### Begründung der Socket Wahl
 Für den *Drone Club Manager* wurde eine verbindungsbasierte **TCP (`Socket` / `ServerSocket`)** auf Port `8080` gewählt.
 **Begründung:** Da über das Netzwerk kritische, konsistente und sicherheitsrelevante Daten wie Authentifizierungen, Pilot und Drone-Updates übertragen werden, darf unter keinen Umständen ein Paketverlust auftreten. TCP garantiert durch sein Handshake Verfahren, die Flusskontrolle und die Paket Reihenfolgeüberwachung eine **100% zuverlässige Datenübertragung**. Im Gegensatz zu UDP wird hier sichergestellt, dass jede Anfrage den Server vollständig und unverfälscht erreicht.
@@ -51,29 +60,47 @@ Die Stabilität und Korrektheit der Implementierung wurde durch zwei hochentwick
 2. `RaceConditionTest`: Provoziert eine gezielte Race Condition, bei der zwei Clients (`Client_A_Speedy` und `Client_B_Flash`) in derselben Millisekunde denselben Drohnen-Datensatz (ID 1) aktualisieren. Dank der `synchronized(dbLock)`Sperre verarbeitet der Server beide Anfragen ohne `SQLITE_BUSY` Ausnahmen erfolgreich nacheinander, wodurch die Datenintegrität gewahrt bleibt.
 
 ## Modul und Klassenübersicht
-| Klasse                                           | Aufgabe                                                                                                                 |
-|:-------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------|
-| **Pilot**                                        | Es speichert Benutzerdaten, z. B. ID, Name und Gesamtflugzeit.                                                          |
-| **Drone**                                        | Es stellt ein Drohne mit Eigenschaften wie Name, Gewicht und Typ dar.                                                   |
-| **Part**                                         | Verwaltet die einzelnen Komponenten, die mit der Drohne verbunden sind (z. B. Motoren, ESC).                            |
-| **FlightLog**                                    | Dokumentiert Flugdaten wie das verbrauchte Datum, die Dauer und die Batteriekapazität.                                  |
-| **DroneType**                                    | (Enum) Definiert die verschiedenen Drohnenkategorien                                                                    |
-| **ExperienceLevel**                              | (Enum) Definiert die Einstufung der Piloten                                                                             |
-| **PartType**                                     | (Enum) Kategorisiert die Ersatzteile und Komponenten                                                                    |
-| **DatabaseConnection**                           | Verwaltet den Verbindungsaufbau zur lokalen SQLite-Datenbankdatei.                                                      |
-| **DatabaseManager**                              | Zentralisiert den gesamten Zugriff auf die SQLite-Datenbank.                                                            |
-| **PilotDAO**                                     | Kapselt spezifische CRUD Operationen für Piloten, einschließlich sicherer Registrierungs und Login Logik.               |
-| **DroneDAO**                                     | Verwaltet die Datenbankzugriffe für die Drohnen Entitäten.                                                              |
-| **FlightLogDAO**                                 | Realisiert relationale Abfragen und lädt vollständige Flugprotokolle inklusive verknüpfter Piloten und Drohnen Objekte. |
-| **PartDAO**                                      | Steuert die datenbankseitige Verwaltung aller Drohnenkomponenten und deren Zuordnung zu den Drohnen.                    |
-| **NetworkManager**                               | Koordiniert Kundenanforderungen und sorgt für konfliktfreie Frequenzzuweisung.                                          |
-| **PasswordHasher**                               | Bietet Funktionen zum sicheren Hashen von Passwörtern unter Verwendung von SHA-256.                                     |
-| **Command**                                      | (Enum) Definiert das Kommunikations-Protokoll-Vokabular (`ADD_DRONE`, `UPDATE_DRONE`, etc.).                            |
-| **ClientRequest / ServerResponse**               | Die standardisierten Transport-Container für die Netzwerk-Pakete.                                                       |
-| **DroneServer**                                  | Öffnet den `ServerSocket(8080)` und wartet in einer Endlosschleife auf eingehende Clients.                              |
-| **ClientHandler**                                | Implementiert `Runnable`. Verarbeitet die Requests eines einzelnen Clients im eigenen Thread.                           |
-| **DroneClient**                                  | Ermöglicht es Client-Anwendungen, sich mit dem Server zu verbinden und Daten typsicher zu senden.                       |
-| **PilotDTO / DroneDTO / PartDTO / FlightLogDTO** | Reine, serialisierbare Datenbehälter für den sicheren Netzwerktransport.                                                |
+| Klasse                                           | Aufgabe                                                                                                                                                          |
+|:-------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Pilot**                                        | Es speichert Benutzerdaten, z. B. ID, Name und Gesamtflugzeit.                                                                                                   |
+| **Drone**                                        | Es stellt ein Drohne mit Eigenschaften wie Name, Gewicht und Typ dar.                                                                                            |
+| **Part**                                         | Verwaltet die einzelnen Komponenten, die mit der Drohne verbunden sind (z. B. Motoren, ESC).                                                                     |
+| **FlightLog**                                    | Dokumentiert Flugdaten wie das verbrauchte Datum, die Dauer und die Batteriekapazität.                                                                           |
+| **DroneType**                                    | (Enum) Definiert die verschiedenen Drohnenkategorien                                                                                                             |
+| **ExperienceLevel**                              | (Enum) Definiert die Einstufung der Piloten                                                                                                                      |
+| **PartType**                                     | (Enum) Kategorisiert die Ersatzteile und Komponenten                                                                                                             |
+| **DatabaseConnection**                           | Verwaltet den Verbindungsaufbau zur lokalen SQLite-Datenbankdatei.                                                                                               |
+| **DatabaseManager**                              | Zentralisiert den gesamten Zugriff auf die SQLite-Datenbank.                                                                                                     |
+| **PilotDAO**                                     | Kapselt spezifische CRUD Operationen für Piloten, einschließlich sicherer Registrierungs und Login Logik.                                                        |
+| **DroneDAO**                                     | Verwaltet die Datenbankzugriffe für die Drohnen Entitäten.                                                                                                       |
+| **FlightLogDAO**                                 | Realisiert relationale Abfragen und lädt vollständige Flugprotokolle inklusive verknüpfter Piloten und Drohnen Objekte.                                          |
+| **PartDAO**                                      | Steuert die datenbankseitige Verwaltung aller Drohnenkomponenten und deren Zuordnung zu den Drohnen.                                                             |
+| **NetworkManager**                               | Koordiniert Kundenanforderungen und sorgt für konfliktfreie Frequenzzuweisung.                                                                                   |
+| **PasswordHasher**                               | Bietet Funktionen zum sicheren Hashen von Passwörtern unter Verwendung von SHA-256.                                                                              |
+| **Command**                                      | (Enum) Definiert das Kommunikations-Protokoll-Vokabular (`ADD_DRONE`, `UPDATE_DRONE`, etc.).                                                                     |
+| **ClientRequest / ServerResponse**               | Die standardisierten Transport-Container für die Netzwerk-Pakete.                                                                                                |
+| **DroneServer**                                  | Öffnet den `ServerSocket(8080)` und wartet in einer Endlosschleife auf eingehende Clients.                                                                       |
+| **ClientHandler**                                | Implementiert `Runnable`. Verarbeitet die Requests eines einzelnen Clients im eigenen Thread.                                                                    |
+| **DroneClient**                                  | Ermöglicht es Client-Anwendungen, sich mit dem Server zu verbinden und Daten typsicher zu senden.                                                                |
+| **PilotDTO / DroneDTO / PartDTO / FlightLogDTO** | Reine, serialisierbare Datenbehälter für den sicheren Netzwerktransport.                                                                                         |
+| **LoginView / RegisterView**                     | JavaFX Formulare für Anmeldung und Registrierung, enthalten ausschließlich UI-Komponenten.                                                                       |
+| **MainDashboardView**                            | Hauptfenster nach dem Login. Seitenmenü, Aktions-Toolbar und `TableView` zur Anzeige von Drohnen/Piloten/Flügen/Teilen.                                          |
+| **DroneDialog / PartDialog / FlightNowDialog**   | Modale `Dialog<T>`-Fenster zum Anlegen/Bearbeiten von Drohnen, Teilen bzw. zum Starten eines Flugs.                                                              |
+| **LoginController**                              | Verarbeitet Login Formular, sendet `LOGIN` Request asynchron und wechselt bei Erfolg zum Dashboard.                                                              |
+| **RegisterController**                           | Validiert Registrierungsformular und sendet `REGISTER` Request asynchron.                                                                                        |
+| **DashboardController**                          | Steuert Kategorie Wechsel, Tabellenaufbau und alle CRUD/Frequenz/Flug Aktionen des Dashboards, einzige Stelle, an der die View mit `DroneClient` verbunden wird. |
+
+## GUI und MVC Architektur
+
+Die Oberfläche ist mit **JavaFX** umgesetzt und folgt strikt dem **Model View Controller** Muster:
+
+- **View** (`gui`): `LoginView`, `RegisterView`, `MainDashboardView`, `DroneDialog`, `PartDialog`, `FlightNowDialog`. Diese Klassen bauen ausschließlich die JavaFX Node Hierarchie auf und stellen Getter für ihre Controls bereit (z. B. `getLoginButton()`, `getMainTable()`).
+- **Controller** (`controller`): `LoginController`, `RegisterController`, `DashboardController`. Sie verdrahten die Event Handler der View (`setOnAction`), bauen `ClientRequest` Objekte, senden sie über `DroneClient` und aktualisieren die View anhand der `ServerResponse`.
+- **Model**: `model`Paket (`Pilot`, `Drone`, `Part`, `FlightLog`, Enums) sowie die DTOs im `network.dto`Paket, die zwischen Client und Server ausgetauscht werden.
+
+**Bildschirme:** Login -> Register -> Haupt-Dashboard mit vier Kategorien (Drones, Pilots, Flights, Parts) inklusive Formular Dialogen zum Anlegen/Bearbeiten sowie einem eigenen „Flight Now“-Dialog zum Starten/Landen eines Flugs.
+
+**Reaktionsfähige Oberfläche (Responsive GUI):** Jede Netzwerkoperation (Login, Registrierung, Laden einer Kategorie, CRUD-Aktionen, Flugstart/-landung) läuft in einem eigenen `javafx.concurrent.Task`, der in einem separaten `Thread` (`setDaemon(true)`) gestartet wird. Der JavaFX Application Thread wird dadurch nie blockiert. Sobald das Ergebnis vorliegt, aktualisiert der jeweilige `Task`Callback (`setOnSucceeded`/`setOnFailed`) die Oberfläche – bei Bedarf zusätzlich über `Platform.runLater(...)`, etwa beim Anzeigen von Fehler Alerts. Verbindungsfehler, Timeouts und vom Server abgelehnte Aktionen werden als `Alert`Popups (`ERROR`/`INFORMATION`) bzw. als Statuslabel Text angezeigt.
 
 ## Datenstruktur
 
@@ -95,7 +122,7 @@ Die Anwendung verwendet eine lokale SQLite Datenbank, um Projektdaten dauerhaft 
     * `model_name`: Modellname der Drohne (TEXT, NOT NULL)
     * `type`: Drohnenkategorie aus dem DroneType-Enum (TEXT)
     * `weight`: Gewicht der Drohne in Gramm oder Kilogramm (REAL)
-    * `is_functional`: Betriebsbereitschaft der Drohne (INTEGER)
+    * `status`: Betriebsstatus der Drohne aus dem `DroneStatus`Enum `AVAILABLE`, `IN_FLIGHT` oder `MAINTENANCE` (TEXT, Default `'AVAILABLE'`)
     * `build_date`: Baudatum der Drohne (TEXT)
     * `last_maintenance_date`: Datum der letzten Wartung (TEXT)
     * `total_flight_time`: Gesamte Flugzeit der Drohne als Duration (TEXT)

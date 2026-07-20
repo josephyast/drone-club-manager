@@ -6,7 +6,7 @@ import network.dto.FlightSetupDTO;
 
 public class FlightNowDialog extends Dialog<FlightSetupDTO> {
 
-    public FlightNowDialog() {
+    public FlightNowDialog(int currentPilotId) {
         setTitle("Flight Setup");
         setHeaderText("Enter flight details before takeoff");
 
@@ -36,7 +36,7 @@ public class FlightNowDialog extends Dialog<FlightSetupDTO> {
                 Double selectedFreq = freqBox.getValue();
                 if (selectedFreq == null) selectedFreq = 0.0;
 
-                return new FlightSetupDTO(0, selectedFreq, locField.getText());
+                return new FlightSetupDTO(currentPilotId, selectedFreq, locField.getText());
             }
             return null;
         });

@@ -236,6 +236,11 @@ public class ClientHandler implements Runnable {
 
                             drone.setStatus(DroneStatus.IN_FLIGHT);
                             drone.setCurrentFrequency(dto.getUsedFrequency());
+
+                            if (dto.getFlightDurationInSeconds() > 0) {
+                                drone.setTotalFlightTime(drone.getTotalFlightTime().plus(Duration.ofSeconds(dto.getFlightDurationInSeconds())));
+                            }
+
                             droneDAO.updateDrone(drone);
 
                             List<Part> parts = partDAO.getPartsByDroneId(dto.getDroneId());
@@ -354,13 +359,20 @@ public class ClientHandler implements Runnable {
                             }
                         }
 
-                        Pilot mockPilot = new Pilot(dto.getPilotId(), "Unknown", "Unknown", "Unknown", ExperienceLevel.BEGINNER, java.time.Duration.ZERO, 0.0, false);
-                        Drone mockDrone = new Drone(dto.getDroneId(), "Unknown", DroneType.TOOTHPICKS, 0.0, DroneStatus.AVAILABLE, java.time.LocalDate.now(), java.time.LocalDate.now(), java.time.Duration.ZERO, 0.0);
+                        FlightLog existingLog = flightLogDAO.getFlightLogById(targetLogId);
+                        long oldDurationSeconds = (existingLog != null) ? existingLog.getFlightDuration().toSeconds() : 0;
+                        long durationDiff = dto.getFlightDurationInSeconds() - oldDurationSeconds;
+
+                        int pilotId = (dto.getPilotId() > 0) ? dto.getPilotId() : ((existingLog != null && existingLog.getPilot() != null) ? existingLog.getPilot().getId() : 0);
+                        int droneId = (dto.getDroneId() > 0) ? dto.getDroneId() : ((existingLog != null && existingLog.getDrone() != null) ? existingLog.getDrone().getId() : 0);
+
+                        Pilot realPilot = (pilotId > 0) ? pilotDAO.getPilotById(pilotId) : null;
+                        Drone realDrone = (droneId > 0) ? droneDAO.getDroneById(droneId) : null;
 
                         FlightLog log = new FlightLog(
                                 targetLogId,
-                                mockPilot,
-                                mockDrone,
+                                realPilot,
+                                realDrone,
                                 java.time.LocalDate.parse(dto.getDate()),
                                 java.time.Duration.ofSeconds(dto.getFlightDurationInSeconds()),
                                 dto.getComment(),
@@ -368,6 +380,30 @@ public class ClientHandler implements Runnable {
                                 dto.getLocation()
                         );
                         flightLogDAO.updateFlightLog(log);
+
+                        if (durationDiff > 0) {
+                            Duration addedDuration = Duration.ofSeconds(durationDiff);
+                            realDrone.setTotalFlightTime(realDrone.getTotalFlightTime().plus(addedDuration));
+                            droneDAO.updateDrone(realDrone);
+
+                            realPilot.setTotalFlightHours(realPilot.getTotalFlightHours().plus(addedDuration));
+                            pilotDAO.updatePilot(realPilot);
+
+                            List<Part> attachedParts = partDAO.getPartsByDroneId(realDrone.getId());
+                            for (Part part : attachedParts) {
+                                Duration newOperatingHours = part.getOperatingHours().plus(addedDuration);
+                                part.setOperatingHours(newOperatingHours);
+
+                                int limitInSeconds = getMaintenanceLimitHours(part.getType().name()) * 3600;
+                                if (newOperatingHours.toSeconds() >= limitInSeconds) {
+                                    part.setWorking(false);
+                                    partDAO.updatePartStatus(part.getId(), false);
+                                } else {
+                                    partDAO.updatePart(part);
+                                }
+                            }
+                        }
+
                         return new ServerResponse(true, "Flight log updated successfully");
                     }
                 }
