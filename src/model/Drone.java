@@ -4,24 +4,26 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Objects;
 
+
 public class Drone {
 
     private int id;
     private String modelName;
     private DroneType type;
     private double weight;
-    private boolean isFunctional;
+    private DroneStatus status;
     private LocalDate buildDate;
     private LocalDate lastMaintenanceDate;
     private Duration totalFlightTime;
     private double currentFrequency;
 
-    public Drone(int id, String modelName, DroneType type, double weight, boolean isFunctional, LocalDate buildDate, LocalDate lastMaintenanceDate, Duration totalFlightTime, double currentFrequency) {
+
+    public Drone(int id, String modelName, DroneType type, double weight, DroneStatus status, LocalDate buildDate, LocalDate lastMaintenanceDate, Duration totalFlightTime, double currentFrequency) {
         this.id = id;
         this.modelName = modelName;
         this.type = type;
         this.weight = weight;
-        this.isFunctional = isFunctional;
+        this.status = status;
         this.buildDate = buildDate;
         this.lastMaintenanceDate = lastMaintenanceDate;
         this.totalFlightTime = totalFlightTime;
@@ -60,13 +62,9 @@ public class Drone {
         this.weight = weight;
     }
 
-    public boolean isFunctional() {
-        return isFunctional;
-    }
+    public DroneStatus getStatus() { return status; }
 
-    public void setFunctional(boolean functional) {
-        isFunctional = functional;
-    }
+    public void setStatus(DroneStatus status) { this.status = status; }
 
     public LocalDate getBuildDate() {
         return buildDate;
@@ -93,9 +91,10 @@ public class Drone {
         this.currentFrequency = currentFrequency;
     }
 
+
     @Override
     public String toString() {
-        return "Drone{" + "id=" + id + ", modelName='" + modelName + '\'' + ", type='" + type + '\'' + ", weight=" + weight + ", isFunctional=" + isFunctional + '\'' + ", buildDate=" + buildDate + ", lastMaintenanceDate=" + lastMaintenanceDate + ", totalFlightTime=" + totalFlightTime +   ", currentFrequency=" + currentFrequency + '}';
+        return "Drone{" + "id=" + id + ", modelName='" + modelName + '\'' + ", type='" + type + '\'' + ", weight=" + weight + ", status=" + status + '\'' + ", buildDate=" + buildDate + ", lastMaintenanceDate=" + lastMaintenanceDate + ", totalFlightTime=" + totalFlightTime +   ", currentFrequency=" + currentFrequency + '}';
     }
 
     @Override
