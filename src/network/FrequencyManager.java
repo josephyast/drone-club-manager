@@ -2,9 +2,8 @@ package network;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 public class FrequencyManager {
     private static final Set<Double> lockedFrequencies = Collections.synchronizedSet(new HashSet<>());
